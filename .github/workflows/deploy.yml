@@ -5,9 +5,10 @@ on:
     branches:
       - main
   workflow_dispatch:
-  
+
 permissions:
-  contents: write
+  contents: read     
+  pages: write  
 
 jobs:
   build-and-deploy:
@@ -25,10 +26,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Configure Git User 
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Run Deploy Script
-        run: npm run deploy
+      - name: Build for production
+        run: npm run build
+      
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages       
+          folder: dist   
