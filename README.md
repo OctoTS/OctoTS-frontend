@@ -2,7 +2,7 @@
 
 ## How to Deploy to Your Own GitHub Pages
 
-### Update the Configuration Files
+### 1. Update the Configuration Files
 Because GitHub Pages hosts project sites at a specific sub-path (e.g., `https://<YOUR-USERNAME>.github.io/<YOUR-REPO-NAME>/`), you must edit two specific files so the app knows exactly where to look for its assets. 
 
 **A. Edit `package.json`:**
@@ -18,12 +18,12 @@ Find the `base` property inside the configuration object and change it to your e
       base: '/<YOUR-REPO-NAME>/', 
     })
 
-### 4. Install Dependencies
+### 2. Install Dependencies
 Run the following command to install all the necessary packages for your fork:
 
     npm install
 
-### 5. Deploy Your Site
+### 3. Deploy Your Site
 Once the configuration is updated and packages are installed, you need to save your changes and run the deploy command. 
 
 First, commit and push your configuration changes:
@@ -38,7 +38,7 @@ Next, run the deployment script:
 
 *(This command builds the project and automatically pushes the compiled files to a special `gh-pages` branch).*
 
-### 6. Enable GitHub Pages in Settings
+### 4. Enable GitHub Pages in Settings
 Finally, tell GitHub to serve your website:
 
 1. Go to your forked repository on GitHub.
