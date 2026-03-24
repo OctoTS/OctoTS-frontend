@@ -6,6 +6,21 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [fileContent, setFileContent] = useState(null)
+
+  const loadFile = async () => {
+    try {
+      const response = await fetch(
+        "https://raw.githubusercontent.com/OctoTS/OctoTS-demo/main/metrics.csv"
+      )
+
+      const text = await response.text()
+
+      setFileContent(text)
+    } catch (error) {
+      console.error("Błąd ładowania pliku:", error)
+    }
+  }
 
   return (
     <>
@@ -27,6 +42,29 @@ function App() {
         >
           Count is {count}
         </button>
+        <button
+          className="counter"
+          onClick={loadFile}
+        >
+          Load data
+        </button>
+        <div>
+          {fileContent !== null && (
+            <>
+              <h3>File content:</h3>
+              <pre
+                style={{
+                  whiteSpace: "pre-wrap",
+                  background: "#111",
+                  padding: "10px",
+                  borderRadius: "8px",
+                }}
+              >
+                {fileContent}
+              </pre>
+            </>
+          )}
+        </div>
       </section>
 
       <div className="ticks"></div>
