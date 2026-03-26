@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ChartCard from './components/ChartCard';
 import { BeeswarmPlot } from './components/Gallery/BeeswarmPlot';
 import { CalendarActivity } from './components/Gallery/CalendarActivity';
@@ -17,6 +17,20 @@ import { RangeTrend } from './components/Gallery/RangeTrend';
 import { StepEvolution } from './components/Gallery/StepEvolution';
 
 function App() {
+  const [fileContent, setFileContent] = useState(null)
+  const loadFile = async () => {
+    try {
+      const response = await fetch(
+        "https://raw.githubusercontent.com/OctoTS/OctoTS-demo/main/metrics.csv"
+      )
+      const text = await response.text()
+      setFileContent(text)
+    } catch (error) {
+      console.error("Błąd ładowania pliku:", error)
+    }
+
+  }
+
   return (
     <div style={{ padding: '60px 20px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       <header style={{ maxWidth: '1200px', margin: '0 auto 50px auto', textAlign: 'center' }}>
@@ -86,6 +100,31 @@ function App() {
           <StepEvolution />
         </ChartCard>
 
+      <center>
+         <button
+          className="counter"
+          onClick={loadFile}
+        >
+          Load data
+        </button>
+        <div>
+          {fileContent !== null && (
+            <>
+              <h3>File content:</h3>
+              <pre
+                style={{
+                  whiteSpace: "pre-wrap",
+                  background: "#111",
+                  padding: "10px",
+                  borderRadius: "8px",
+                }}
+              >
+                {fileContent}
+              </pre>
+            </>
+          )}
+        </div>
+      </center>
       </main>
     </div>
   );
