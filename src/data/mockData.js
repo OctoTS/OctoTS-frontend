@@ -8,11 +8,11 @@ export const swarmData = Array.from({ length: 40 }, (_, i) => ({
 }));
 
 export const calendarData = Array.from({ length: 100 }, (_, i) => ({
-  day: `2023-05-${((i % 25) + 1).toString().padStart(2, '0')}`,
+  day: `2025-05-${((i % 50) + 2).toString().padStart(2, '0')}`,
   value: Math.floor(Math.random() * 400)
 }));
 
-export const longTermData = Array.from({ length: 100 }, (_, i) => ({
+export const longTermData = Array.from({ length: 400 }, (_, i) => ({
   date: new Date(2023, 0, i).toISOString().split('T')[0],
   value: Math.floor(500 + Math.random() * 1000)
 }));

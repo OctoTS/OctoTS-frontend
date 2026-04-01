@@ -182,3 +182,76 @@
     border-right-color: var(--border);
   }
 }
+
+.control-panel {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.url-input {
+  padding: 10px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  width: 250px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.action-button, .file-label, .reset-button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.action-button {
+  background-color: #646cff;
+  color: white;
+  border: none;
+}
+
+.action-button:hover {
+  background-color: #535bf2;
+}
+
+.file-label {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.file-label:hover {
+  background-color: #e2e8f0;
+}
+
+.divider {
+  color: #94a3b8;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.reset-button {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.reset-button:hover {
+  background-color: #fecaca;
+}

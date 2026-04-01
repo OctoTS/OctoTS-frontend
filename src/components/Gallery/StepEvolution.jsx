@@ -5,13 +5,34 @@ import { stepDependencyData } from '../../data/mockData';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
 
-export const StepEvolution = () => {
+export const StepEvolution = ({ data }) => {
+  const finalChartData = data ? {
+    labels: data.map(item => item.timestamp.split('T')[0]),
+    datasets: [{
+      label: 'LOC Evolution',
+      data: data.map(item => item.lines_of_code),
+      stepped: true, 
+      borderColor: '#646cff',
+      backgroundColor: 'rgba(100, 108, 255, 0.1)',
+      fill: true,
+      pointRadius: 4,
+      pointBackgroundColor: '#646cff'
+    }]
+  } : stepDependencyData;
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      x: { grid: { color: '#333' }, ticks: { color: '#888' } },
-      y: { grid: { color: '#333' }, ticks: { color: '#888' }, beginAtZero: true }
+      x: { 
+        grid: { color: '#333' }, 
+        ticks: { color: '#888' } 
+      },
+      y: { 
+        grid: { color: '#333' }, 
+        ticks: { color: '#888' }, 
+        beginAtZero: true 
+      }
     },
     plugins: {
       legend: { display: false }
@@ -20,7 +41,7 @@ export const StepEvolution = () => {
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <Line data={stepDependencyData} options={options} />
+      <Line data={finalChartData} options={options} />
     </div>
   );
 };
