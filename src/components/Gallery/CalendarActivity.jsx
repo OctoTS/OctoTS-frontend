@@ -1,26 +1,31 @@
 import React from 'react';
 import { ResponsiveCalendar } from '@nivo/calendar';
+import { calendarData } from '../../data/mockData';
 
-export const CalendarActivity = () => {
-  const data = Array.from({ length: 100 }, (_, i) => {
-    const d = new Date(2023, 8, i); // Dane od września 2023
-    return {
-      day: d.toISOString().split('T')[0],
-      value: Math.floor(Math.random() * 400)
-    };
-  });
+export const CalendarActivity = ({ data }) => {
+  const finalData = data ? data.map(item => ({
+    day: item.timestamp.split('T')[0],
+    value: item.lines_of_code
+  })) : calendarData;
+
+  const years = finalData
+    .map(d => parseInt(d.day.split('-')[0]))
+    .filter(n => !isNaN(n));
+
+  const minYear = years.length > 0 ? Math.min(...years) : 2025;
+  const maxYear = years.length > 0 ? Math.max(...years) : 2025;
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <ResponsiveCalendar
-        data={data}
-        from="2023-08-01"
-        to="2023-11-30"
+        data={finalData}
+        from={`${minYear}-01-01`}
+        to={`${maxYear}-12-31`}
         emptyColor="#f1f2f6"
         colors={['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560']}
         cellSize={30}
         margin={{ top: 40, right: 10, bottom: 10, left: 40 }}
-        yearSpacing={0}
+        yearSpacing={40}
         monthBorderColor="#ffffff"
         dayBorderWidth={3}
         dayBorderColor="#ffffff"
