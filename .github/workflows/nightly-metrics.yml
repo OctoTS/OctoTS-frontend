@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - feat/*
 
 permissions:
   contents: write
@@ -33,9 +36,13 @@ jobs:
         run: |
           python3 tools/generateSampleData.py . --output temp.csv
 
-      - name: Process data (append to time series)
+      - name: Process data (only if temp exists)
         run: |
-          python3 tools/processData.py --input temp.csv --output metrics.csv
+          if [ -f temp.csv ]; then
+            python3 tools/processData.py --input temp.csv --output metrics.csv
+          else
+            echo "No data generated, skipping processing"
+          fi
 
       - name: Commit and push if changes exist
         run: |
