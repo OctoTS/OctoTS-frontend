@@ -44,14 +44,20 @@ jobs:
             echo "No data generated, skipping processing"
           fi
 
+      - name: Checkout metrics branch
+        uses: actions/checkout@v4
+        with:
+          ref: metrics-data
+          path: metrics-repo
+        continue-on-error: true
+
       - name: Commit and push if changes exist
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
           if [ -f metrics.csv ]; then
-            git fetch origin
-            git checkout -B metrics-data origin/metrics-data || git checkout -b metrics-data
+            cp metrics.csv metrics-repo/
+            cd metrics-repo
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
             git add metrics.csv
             git diff --quiet && git diff --staged --quiet || \
               (git commit -m "chore: update metrics [skip ci]" && git push origin metrics-data)
