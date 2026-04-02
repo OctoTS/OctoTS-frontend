@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - feat/*
 
 permissions:
   contents: write
@@ -47,9 +50,11 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
           if [ -f metrics.csv ]; then
+            git fetch origin
+            git checkout -B metrics-data origin/metrics-data || git checkout -b metrics-data
             git add metrics.csv
             git diff --quiet && git diff --staged --quiet || \
-              (git commit -m "chore: update metrics [skip ci]" && git push)
+              (git commit -m "chore: update metrics [skip ci]" && git push origin metrics-data)
           else
             echo "No metrics file generated."
           fi
