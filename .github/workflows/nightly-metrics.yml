@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-  #test
   push:
     branches:
       - feat/*
@@ -33,18 +32,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Generate raw data
-        run: |
-          python3 tools/generateSampleData.py . --output temp.csv
-
-      - name: Process data (only if temp exists)
-        run: |
-          if [ -f temp.csv ]; then
-            python3 tools/processData.py --input temp.csv --output metrics.csv
-          else
-            echo "No data generated, skipping processing"
-          fi
-
       - name: Prepare metrics branch
         run: |
           git fetch origin
@@ -55,6 +42,18 @@ jobs:
             git pull origin metrics-data
           else
             git checkout -b metrics-data
+          fi
+
+      - name: Generate raw data
+        run: |
+          python3 tools/generateSampleData.py . --output temp.csv
+
+      - name: Process data (only if temp exists)
+        run: |
+          if [ -f temp.csv ]; then
+            python3 tools/processData.py --input temp.csv --output metrics.csv
+          else
+            echo "No data generated, skipping processing"
           fi
 
       - name: Commit and push if changes exist
