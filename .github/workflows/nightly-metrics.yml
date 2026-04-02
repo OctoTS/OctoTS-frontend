@@ -44,34 +44,27 @@ jobs:
             echo "No data generated, skipping processing"
           fi
 
-      - name: Checkout metrics branch
-        uses: actions/checkout@v4
-        with:
-          ref: metrics-data
-          path: metrics-repo
-        continue-on-error: true
+      - name: Prepare metrics branch
+        run: |
+          git fetch origin
+
+          # Check if branch exists remotely
+          if git ls-remote --exit-code --heads origin metrics-data; then
+            git checkout metrics-data
+            git pull origin metrics-data
+          else
+            git checkout -b metrics-data
+          fi
 
       - name: Commit and push if changes exist
         run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
           if [ -f metrics.csv ]; then
-            # Check if metrics-repo is a valid git repo
-            if [ ! -d metrics-repo/.git ]; then
-              mkdir -p metrics-repo
-              cd metrics-repo
-              git init
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-              git config user.name "github-actions[bot]"
-              git remote add origin https://github.com/${{ github.repository }}.git
-            else
-              cd metrics-repo
-              git config --local user.email "github-actions[bot]@users.noreply.github.com"
-              git config --local user.name "github-actions[bot]"
-            fi
-            
-            cp ../metrics.csv .
             git add metrics.csv
             git diff --quiet && git diff --staged --quiet || \
-              (git commit -m "chore: update metrics [skip ci]" && git push -u origin HEAD:refs/heads/metrics-data)
+              (git commit -m "chore: update metrics [skip ci]" && git push origin metrics-data)
           else
             echo "No metrics file generated."
           fi
