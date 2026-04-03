@@ -33,6 +33,10 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Generate raw data
+        run: |
+          python3 tools/generateSampleData.py . --output temp.csv
+
       - name: Prepare metrics branch
         run: |
           git fetch origin
@@ -44,10 +48,6 @@ jobs:
           else
             git checkout -b metrics-data
           fi
-
-      - name: Generate raw data
-        run: |
-          python3 tools/generateSampleData.py . --output temp.csv
 
       - name: Process data (only if temp exists)
         run: |
