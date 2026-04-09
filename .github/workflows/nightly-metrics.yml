@@ -36,6 +36,7 @@ jobs:
       - name: Run OctoTS Action
         uses: OctoTS/OctoTS-action@feat/action-init
         with:
+          format: csv
           input: temp.csv
           output: metrics.csv
           branch: metrics-data-1
