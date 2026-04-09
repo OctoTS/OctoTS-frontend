@@ -2,12 +2,19 @@ import React from 'react';
 import { ResponsiveSwarmPlot } from '@nivo/swarmplot';
 import { swarmData } from '../../data/mockData';
 
-export const BeeswarmPlot = ({ data }) => {
+export const BeeswarmPlot = ({ data, lang, dataLabel }) => {
+  const translations = {
+    pl: { author: 'Autor', activity: 'Wartość aktywności' },
+    en: { author: 'Author', activity: 'Activity Value' }
+  };
+
+  const t = translations[lang] || translations.pl;
+
   const finalData = data ? data.map((item, index) => ({
     id: `${item.author}-${index}`,
     group: item.author,
-    value: item.lines_of_code,
-    volume: item.lines_of_code 
+    value: item[dataLabel],
+    volume: item[dataLabel]
   })) : swarmData;
 
   const allValues = finalData.map(d => d.volume);
@@ -36,7 +43,7 @@ export const BeeswarmPlot = ({ data }) => {
           tickSize: 10, 
           tickPadding: 5, 
           tickRotation: 0, 
-          legend: data ? 'Author' : 'Activity Value', 
+          legend: data ? t.author : t.activity, 
           legendPosition: 'middle', 
           legendOffset: 32 
         }}

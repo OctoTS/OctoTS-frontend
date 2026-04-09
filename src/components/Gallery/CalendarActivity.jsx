@@ -2,10 +2,10 @@ import React from 'react';
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { calendarData } from '../../data/mockData';
 
-export const CalendarActivity = ({ data }) => {
+export const CalendarActivity = ({ data, dataLabel }) => {
   const finalData = data ? data.map(item => ({
     day: item.timestamp.split('T')[0],
-    value: item.lines_of_code
+    value: item[dataLabel]
   })) : calendarData;
 
   const years = finalData

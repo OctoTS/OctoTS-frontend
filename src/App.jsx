@@ -81,6 +81,7 @@ const translations = {
 function App() {
   const [lang, setLang] = useState('pl');
   const [processedData, setProcessedData] = useState(null);
+  const [dataLabel, setDataLabel] = useState('lines_of_code');
   const [sourceType, setSourceType] = useState('TESTOWE');
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -94,12 +95,18 @@ function App() {
     try {
       const lines = text.trim().split('\n');
       if (lines.length < 2) return null;
-      const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
-      const timeIdx = headers.findIndex(h => h.includes('time') || h.includes('date'));
-      const authorIdx = headers.findIndex(h => h.includes('author') || h.includes('user') || h.includes('who'));
-      const locIdx = headers.findIndex(h => h.includes('loc') || h.includes('lines') || h.includes('code'));
+      
+      const headers = lines[0].split(',').map(h => h.trim());
+      const headersLower = headers.map(h => h.toLowerCase());
+      
+      const timeIdx = headersLower.findIndex(h => h.includes('time') || h.includes('date'));
+      const authorIdx = headersLower.findIndex(h => h.includes('author') || h.includes('user') || h.includes('who'));
+      const locIdx = headersLower.findIndex(h => h.includes('loc') || h.includes('lines') || h.includes('code') || h.includes('value') || h.includes('val') || h.includes('count') || h.includes('amount'));
 
       if (timeIdx === -1 || authorIdx === -1 || locIdx === -1) return null;
+
+      const metricName = headers[locIdx];
+      setDataLabel(metricName);
 
       const result = lines.slice(1).map((line, index) => {
         const parts = line.split(',');
@@ -108,7 +115,7 @@ function App() {
           id: index,
           timestamp: parts[timeIdx].trim(),
           author: parts[authorIdx].trim(),
-          lines_of_code: parseInt(parts[locIdx].trim(), 10) || 0
+          [metricName]: parseInt(parts[locIdx].trim(), 10) || 0
         };
       }).filter(Boolean);
       return result.length > 0 ? result : null;
@@ -151,6 +158,7 @@ function App() {
 
   const resetData = () => {
     setProcessedData(null);
+    setDataLabel('lines_of_code');
     setSourceType('TEST');
     setUrl('');
   };
@@ -198,50 +206,50 @@ function App() {
       </header>
 
       <main className="dashboard-grid">
-        <ChartCard title={t('charts.c1.title')} library="Nivo" source={sourceType} description={t('charts.c1.desc')} disabled={processedData !== null && !isSupported(1)} lang={lang}>
-          <BeeswarmPlot data={processedData} />
+        <ChartCard title={t('charts.c1.title')} library="Nivo" source={sourceType} description={t('charts.c1.desc')} disabled={processedData !== null && !isSupported(1)} lang={lang} dataLabel={dataLabel}>
+          <BeeswarmPlot data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c2.title')} library="Nivo" source={sourceType} description={t('charts.c2.desc')} disabled={processedData !== null && !isSupported(2)} lang={lang}>
-          <CalendarActivity data={processedData} />
+        <ChartCard title={t('charts.c2.title')} library="Nivo" source={sourceType} description={t('charts.c2.desc')} disabled={processedData !== null && !isSupported(2)} lang={lang} dataLabel={dataLabel}>
+          <CalendarActivity data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c3.title')} library="ECharts" source={sourceType} description={t('charts.c3.desc')} disabled={processedData !== null && !isSupported(3)} lang={lang}>
-          <TimeZoomPlot data={processedData} />
+        <ChartCard title={t('charts.c3.title')} library="ECharts" source={sourceType} description={t('charts.c3.desc')} disabled={processedData !== null && !isSupported(3)} lang={lang} dataLabel={dataLabel}>
+          <TimeZoomPlot data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c4.title')} library="Nivo" source={sourceType} description={t('charts.c4.desc')} disabled={processedData !== null && !isSupported(4)} lang={lang}>
-          <StreamGraph data={processedData} />
+        <ChartCard title={t('charts.c4.title')} library="Nivo" source={sourceType} description={t('charts.c4.desc')} disabled={processedData !== null && !isSupported(4)} lang={lang} dataLabel={dataLabel}>
+          <StreamGraph data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c5.title')} library="Nivo" source={sourceType} description={t('charts.c5.desc')} disabled={processedData !== null && !isSupported(5)} lang={lang}>
-          <BumpChart data={processedData} />
+        <ChartCard title={t('charts.c5.title')} library="Nivo" source={sourceType} description={t('charts.c5.desc')} disabled={processedData !== null && !isSupported(5)} lang={lang} dataLabel={dataLabel}>
+          <BumpChart data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c6.title')} library="ECharts" source={sourceType} description={t('charts.c6.desc')} disabled={processedData !== null && !isSupported(6)} lang={lang}>
-          <ProcessTimeline data={processedData} />
+        <ChartCard title={t('charts.c6.title')} library="ECharts" source={sourceType} description={t('charts.c6.desc')} disabled={processedData !== null && !isSupported(6)} lang={lang} dataLabel={dataLabel}>
+          <ProcessTimeline data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c7.title')} library="ECharts" source={sourceType} description={t('charts.c7.desc')} disabled={processedData !== null && !isSupported(7)} lang={lang}>
-          <HourlyCycle data={processedData} />
+        <ChartCard title={t('charts.c7.title')} library="ECharts" source={sourceType} description={t('charts.c7.desc')} disabled={processedData !== null && !isSupported(7)} lang={lang} dataLabel={dataLabel}>
+          <HourlyCycle data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c8.title')} library="ApexCharts" source={sourceType} description={t('charts.c8.desc')} disabled={processedData !== null && !isSupported(8)} lang={lang}>
-          <VolatilityCandle data={processedData} />
+        <ChartCard title={t('charts.c8.title')} library="ApexCharts" source={sourceType} description={t('charts.c8.desc')} disabled={processedData !== null && !isSupported(8)} lang={lang} dataLabel={dataLabel}>
+          <VolatilityCandle data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c9.title')} library="Chart.js" source={sourceType} description={t('charts.c9.desc')} disabled={processedData !== null && !isSupported(9)} lang={lang}>
-          <StatusRadar data={processedData} />
+        <ChartCard title={t('charts.c9.title')} library="Chart.js" source={sourceType} description={t('charts.c9.desc')} disabled={processedData !== null && !isSupported(9)} lang={lang} dataLabel={dataLabel}>
+          <StatusRadar data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c10.title')} library="ApexCharts" source={sourceType} description={t('charts.c10.desc')} disabled={processedData !== null && !isSupported(10)} lang={lang}>
-          <ModuleTree data={processedData} />
+        <ChartCard title={t('charts.c10.title')} library="ApexCharts" source={sourceType} description={t('charts.c10.desc')} disabled={processedData !== null && !isSupported(10)} lang={lang} dataLabel={dataLabel}>
+          <ModuleTree data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c11.title')} library="Chart.js" source={sourceType} description={t('charts.c11.desc')} disabled={processedData !== null && !isSupported(11)} lang={lang}>
-          <ResourcePolar data={processedData} />
+        <ChartCard title={t('charts.c11.title')} library="Chart.js" source={sourceType} description={t('charts.c11.desc')} disabled={processedData !== null && !isSupported(11)} lang={lang} dataLabel={dataLabel}>
+          <ResourcePolar data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c12.title')} library="Chart.js" source={sourceType} description={t('charts.c12.desc')} disabled={processedData !== null && !isSupported(12)} lang={lang}>
-          <EfficiencyScatter data={processedData} />
+        <ChartCard title={t('charts.c12.title')} library="Chart.js" source={sourceType} description={t('charts.c12.desc')} disabled={processedData !== null && !isSupported(12)} lang={lang} dataLabel={dataLabel}>
+          <EfficiencyScatter data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c13.title')} library="ApexCharts" source={sourceType} description={t('charts.c13.desc')} disabled={processedData !== null && !isSupported(13)} lang={lang}>
-          <NetChangeBar data={processedData} />
+        <ChartCard title={t('charts.c13.title')} library="ApexCharts" source={sourceType} description={t('charts.c13.desc')} disabled={processedData !== null && !isSupported(13)} lang={lang} dataLabel={dataLabel}>
+          <NetChangeBar data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c14.title')} library="ApexCharts" source={sourceType} description={t('charts.c14.desc')} disabled={processedData !== null && !isSupported(14)} lang={lang}>
-          <RangeTrend data={processedData} />
+        <ChartCard title={t('charts.c14.title')} library="ApexCharts" source={sourceType} description={t('charts.c14.desc')} disabled={processedData !== null && !isSupported(14)} lang={lang} dataLabel={dataLabel}>
+          <RangeTrend data={processedData} dataLabel={dataLabel} />
         </ChartCard>
-        <ChartCard title={t('charts.c15.title')} library="Chart.js" source={sourceType} description={t('charts.c15.desc')} disabled={processedData !== null && !isSupported(15)} lang={lang}>
-          <StepEvolution data={processedData} />
+        <ChartCard title={t('charts.c15.title')} library="Chart.js" source={sourceType} description={t('charts.c15.desc')} disabled={processedData !== null && !isSupported(15)} lang={lang} dataLabel={dataLabel}>
+          <StepEvolution data={processedData} dataLabel={dataLabel} />
         </ChartCard>
       </main>
     </div>

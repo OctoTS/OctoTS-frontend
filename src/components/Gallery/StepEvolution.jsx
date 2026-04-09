@@ -5,13 +5,20 @@ import { stepDependencyData } from '../../data/mockData';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
 
-export const StepEvolution = ({ data }) => {
+export const StepEvolution = ({ data, lang, dataLabel }) => {
+  const translations = {
+    pl: { label: 'Ewolucja' },
+    en: { label: 'Evolution' }
+  };
+
+  const t = translations[lang] || translations.pl;
+
   const finalChartData = data ? {
     labels: data.map(item => item.timestamp.split('T')[0]),
     datasets: [{
-      label: 'LOC Evolution',
-      data: data.map(item => item.lines_of_code),
-      stepped: true, 
+      label: `${dataLabel} (${t.label})`,
+      data: data.map(item => item[dataLabel]),
+      stepped: true,
       borderColor: '#646cff',
       backgroundColor: 'rgba(100, 108, 255, 0.1)',
       fill: true,
@@ -24,14 +31,14 @@ export const StepEvolution = ({ data }) => {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      x: { 
-        grid: { color: '#333' }, 
-        ticks: { color: '#888' } 
+      x: {
+        grid: { color: '#333' },
+        ticks: { color: '#888' }
       },
-      y: { 
-        grid: { color: '#333' }, 
-        ticks: { color: '#888' }, 
-        beginAtZero: true 
+      y: {
+        grid: { color: '#333' },
+        ticks: { color: '#888' },
+        beginAtZero: true
       }
     },
     plugins: {

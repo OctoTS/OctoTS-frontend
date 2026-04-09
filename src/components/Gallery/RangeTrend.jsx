@@ -2,36 +2,43 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 import { rangeMetricsData } from '../../data/mockData';
 
-export const RangeTrend = ({ data }) => {
+export const RangeTrend = ({ data, lang, dataLabel }) => {
+  const translations = {
+    pl: { range: 'Zakres odchylenia' },
+    en: { range: 'Deviation Range' }
+  };
+
+  const t = translations[lang] || translations.pl;
+
   const finalSeriesData = data ? data.map(item => ({
     x: new Date(item.timestamp).getTime(),
     y: [
-      Math.floor(item.lines_of_code * 0.85),
-      Math.ceil(item.lines_of_code * 1.15)  
+      Math.floor(item[dataLabel] * 0.85),
+      Math.ceil(item[dataLabel] * 1.15)
     ]
   })) : rangeMetricsData;
 
-  const series = [{ 
-    name: data ? 'LOC Deviation Range' : 'LoC Deviation Range', 
-    data: finalSeriesData 
+  const series = [{
+    name: data ? `${dataLabel} (${t.range})` : `LoC ${t.range}`,
+    data: finalSeriesData
   }];
 
   const options = {
-    chart: { 
-      type: 'area', 
-      background: 'transparent', 
-      toolbar: { show: false } 
+    chart: {
+      type: 'area',
+      background: 'transparent',
+      toolbar: { show: false }
     },
     colors: ['#646cff'],
     fill: { type: 'solid', opacity: 0.2 },
     stroke: { curve: 'smooth', width: 2 },
     theme: { mode: 'dark' },
-    xaxis: { 
-      type: 'datetime', 
-      labels: { style: { colors: '#888' } } 
+    xaxis: {
+      type: 'datetime',
+      labels: { style: { colors: '#888' } }
     },
-    yaxis: { 
-      labels: { style: { colors: '#888' } } 
+    yaxis: {
+      labels: { style: { colors: '#888' } }
     },
     grid: { borderColor: '#333' },
     tooltip: { theme: 'dark' }
