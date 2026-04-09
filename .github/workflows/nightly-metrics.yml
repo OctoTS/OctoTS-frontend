@@ -4,9 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-  push:
-    branches:
-      - feat/*
 
 permissions:
   contents: write
@@ -32,9 +29,9 @@ jobs:
           python3 tools/generateSampleData.py . --output temp.csv
 
       - name: Run OctoTS Action
-        uses: OctoTS/OctoTS-action@feat/action-init
+        uses: OctoTS/OctoTS-action@v1
         with:
-          format: pickle
+          format: csv
           input: temp.csv
-          output: metrics.pickle
+          output: metrics.csv
           branch: metrics-data-1
