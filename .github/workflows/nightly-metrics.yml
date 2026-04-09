@@ -34,7 +34,7 @@ jobs:
       - name: Run OctoTS Action
         uses: OctoTS/OctoTS-action@feat/action-init
         with:
-          format: excel
+          format: pickle
           input: temp.csv
-          output: metrics.xlsx
+          output: metrics.pickle
           branch: metrics-data-1
