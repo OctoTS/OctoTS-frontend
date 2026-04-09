@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - feat/*
-#test
-#test
 
 permissions:
   contents: write
@@ -36,7 +34,7 @@ jobs:
       - name: Run OctoTS Action
         uses: OctoTS/OctoTS-action@feat/action-init
         with:
-          format: csv
+          format: json
           input: temp.csv
-          output: metrics.csv
+          output: metrics.json
           branch: metrics-data-1
