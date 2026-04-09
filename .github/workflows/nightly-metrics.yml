@@ -34,7 +34,7 @@ jobs:
       - name: Run OctoTS Action
         uses: OctoTS/OctoTS-action@feat/action-init
         with:
-          format: json
+          format: parquet
           input: temp.csv
-          output: metrics.json
+          output: metrics.parquet
           branch: metrics-data-1
