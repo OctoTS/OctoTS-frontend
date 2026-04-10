@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const ChartCard = ({ title, library, children, description, source, disabled, lang }) => {
+const ChartCard = ({ title, library, children, description, source, disabled, lang, dataLabel }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const translations = {
@@ -12,7 +12,8 @@ const ChartCard = ({ title, library, children, description, source, disabled, la
       onlyMock: 'Tylko dane testowe',
       close: 'Zamknij (ESC)',
       lib: 'Biblioteka',
-      src: 'Źródło'
+      src: 'Źródło',
+      metric: 'Metryka'
     },
     en: {
       mock: 'MOCK',
@@ -22,7 +23,8 @@ const ChartCard = ({ title, library, children, description, source, disabled, la
       onlyMock: 'Mock data only',
       close: 'Close (ESC)',
       lib: 'Library',
-      src: 'Source'
+      src: 'Source',
+      metric: 'Metric'
     }
   };
 
@@ -115,7 +117,9 @@ const ChartCard = ({ title, library, children, description, source, disabled, la
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
                <h2 style={{ color: '#fff', margin: 0 }}>{title}</h2>
-               <span style={{ color: '#94a3b8', fontSize: '14px' }}>{t.lib}: {library} | {t.src}: {getSourceLabel(source)}</span>
+               <span style={{ color: '#94a3b8', fontSize: '14px' }}>
+                 {t.lib}: {library} | {t.src}: {getSourceLabel(source)} | {t.metric}: {dataLabel}
+               </span>
             </div>
             <button onClick={toggleExpansion} style={{ background: '#334155', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>
               {t.close}

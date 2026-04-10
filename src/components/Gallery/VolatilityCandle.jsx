@@ -2,26 +2,48 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 import { candleVolatilityData } from '../../data/mockData';
 
-export const VolatilityCandle = ({ data }) => {
+export const VolatilityCandle = ({ data, lang, dataLabel }) => {
+  const translations = {
+    pl: { seriesName: 'Zmienność' },
+    en: { seriesName: 'Volatility' }
+  };
+
+  const t = translations[lang] || translations.pl;
+
   const finalSeries = data ? [{
+    name: dataLabel || t.seriesName,
     data: data.map(item => ({
       x: new Date(item.timestamp).getTime(),
       y: [
-        item.lines_of_code, 
-        item.lines_of_code + 15, 
-        item.lines_of_code - 10, 
-        item.lines_of_code + 5
+        item[dataLabel],
+        item[dataLabel] + 15,
+        item[dataLabel] - 10,
+        item[dataLabel] + 5
       ]
     }))
   }] : [{ data: candleVolatilityData }];
 
   const options = {
-    chart: { type: 'candlestick', background: 'transparent', toolbar: { show: false } },
-    xaxis: { type: 'datetime', labels: { style: { colors: '#888' } } },
-    yaxis: { labels: { style: { colors: '#888' } } },
+    chart: { 
+      type: 'candlestick', 
+      background: 'transparent', 
+      toolbar: { show: false } 
+    },
+    xaxis: { 
+      type: 'datetime', 
+      labels: { style: { colors: '#888' } } 
+    },
+    yaxis: { 
+      labels: { style: { colors: '#888' } } 
+    },
     theme: { mode: 'dark' },
     plotOptions: {
-      candlestick: { colors: { upward: '#646cff', downward: '#ff6384' } }
+      candlestick: { 
+        colors: { upward: '#646cff', downward: '#ff6384' } 
+      }
+    },
+    tooltip: {
+      theme: 'dark'
     }
   };
 
