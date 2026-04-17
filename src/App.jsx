@@ -1,261 +1,232 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import './App.css';
+import OctoDashboard from './components/OctoDashboard';
 
-import ChartCard from './components/ChartCard';
-
-// ------------------------------------------------------------------
-// ZAKTUALIZOWANY WRAPPER DLA TWOJEJ BIBLIOTEKI VANILLA JS
-// ------------------------------------------------------------------
-const VanillaOctoChart = ({ data, engine, type, chartId, title, yLabel, xLabel }) => {
-  const chartRef = useRef(null);
-
-  useEffect(() => {
-    // Sprawdzamy, czy biblioteka jest dostępna i czy mamy dane
-    if (typeof window.OctoTS === 'undefined' || !chartRef.current || !data) return;
-
-    chartRef.current.id = chartId;
-
-    // Etykiety słupków (np. nazwy miast) i ich wartości
-    const labels = data.map(item => item.label);
-    const dataValues = data.map(item => item.value);
-
-    // Wyciągamy czas z pierwszego elementu, by wrzucić go do podtytułu
-    // (Zakładamy, że sprawdzasz zrzut danych dla konkretnego timestampa)
-    const timestamp = data.length > 0 && data[0].time ? `Czas pomiaru: ${data[0].time}` : '';
-
-    // Tworzymy obiekt konfiguracyjny zgodny z Twoim nowym kodem
-    const config = {
-      type: type,
-      title: title,
-      subtitle: timestamp,       // Czas ląduje ładnie nad wykresem
-      xAxisTitle: xLabel || '',  // np. "Miasto"
-      yAxisTitle: yLabel || '',  // np. "Wartość"
-      labels: labels,            // Podpisy pod słupkami
-      data: dataValues           // Wysokość słupków
-    };
-    console.log(config)
-    // Wywołanie Twojej zaktualizowanej funkcji
-    const chartInstance = window.OctoTS.makewykres(engine, chartId, config);
-
-    return () => {
-      if (chartInstance) {
-        if (typeof chartInstance.destroy === 'function') chartInstance.destroy();
-        if (typeof chartInstance.dispose === 'function') chartInstance.dispose();
-      }
-    };
-  }, [data, engine, type, chartId, title, yLabel, xLabel]);
-
-  return <div ref={chartRef} style={{ width: '100%', height: '350px' }}></div>;
-};
-
-// ------------------------------------------------------------------
-// TŁUMACZENIA I GŁÓWNA APLIKACJA
-// ------------------------------------------------------------------
 const translations = {
   pl: {
     title: "OctoTS",
-    subtitle: "Wizualizacja Metryk Projektowych",
+    subtitle: "Wizualizacja Metryk w Czasie",
+    btnFile: "Wybierz plik z dysku",
     urlPlaceholder: "Wklej adres URL do pliku CSV...",
     btnLoad: "Pobierz z URL",
     btnLoading: "Ładowanie...",
     orSeparator: "LUB",
-    btnFile: "Wybierz plik z dysku",
-    btnReset: "Przywróć testowe",
-    errorUrl: "Błąd ładowania URL. Upewnij się, że link prowadzi bezpośrednio do pliku w formacie raw.",
-    errorData: "Błąd parsowania danych. Sprawdź format CSV.",
+    btnReset: "Wyczyść dane",
+    mappingTitle: "Konfiguracja mapowania kolumn",
+    labelTime: "Kolumna czasu (data/timestamp)",
+    labelGroup: "Kolumna grupy (wartość tekstowa)",
+    labelValue: "Kolumna wartości (liczbowa)",
+    btnConfirm: "Generuj wykresy",
+    successLoad: "Dane wczytane. Skonfiguruj kolumny.",
+    successProcess: "Wizualizacje gotowe!",
+    errorFile: "Błąd wczytywania danych.",
+    errorNetwork: "Błąd sieciowy podczas pobierania.",
+    initialMessage: "Wgraj plik CSV lub podaj adres URL, aby zobaczyć wizualizacje danych.",
     charts: {
-      c1: { title: "1. Porównanie Wartości", desc: "Zestawienie dla konkretnego czasu." },
-      c2: { title: "2. Audyt Ciągłości", desc: "ECharts Wykres Liniowy." },
-      c3: { title: "3. Nawigacja po Historii", desc: "ECharts Wykres Słupkowy." },
+      c1: { title: "1. Puls Aktywności", desc: "Zagęszczenie wystąpień zdarzeń w czasie." },
+      c2: { title: "2. Audyt Ciągłości", desc: "Stabilność rejestrowania danych w skali roku." },
+      c3: { title: "3. Nawigacja po Historii", desc: "Linia trendu z interaktywnym suwakiem czasu." },
+      c4: { title: "4. Ewolucja Struktury", desc: "Zmiany proporcji składowych w czasie." },
+      c5: { title: "5. Dynamika Rankingów", desc: "Zmiany pozycji grup w czasie." },
+      c6: { title: "6. Chronologia Procesów", desc: "Sekwencja zdarzeń zarejestrowana w czasie." },
+      c7: { title: "7. Cykl Dobowy", desc: "Wzorce zachowań w skali 24-godzinnej." },
+      c8: { title: "8. Zmienność Wydajności", desc: "Wykres świecowy ilustrujący fluktuacje." },
+      c9: { title: "9. Profil Porównawczy", desc: "Zestawienie wkładu poszczególnych grup." },
+      c10: { title: "10. Hierarchia Rozmiaru", desc: "Struktura wag poszczególnych elementów." },
+      c11: { title: "11. Kompozycja Typów", desc: "Proporcje typów danych." },
+      c12: { title: "12. Analiza Korelacji", desc: "Badanie zależności między zmiennymi." },
+      c13: { title: "13. Bilans Zmian", desc: "Zestawienie wartości dodanych i usuniętych." },
+      c14: { title: "14. Zakres Zmienności", desc: "Wizualizacja obszarów odchyleń wartości." },
+      c15: { title: "15. Ewolucja Skokowa", desc: "Zmiany stanu systemu rejestrowane w czasie." },
     }
   },
   en: {
-    // ... skrócone dla czytelności ...
+    title: "OctoTS",
+    subtitle: "Time-Series Metrics Visualization",
+    btnFile: "Choose file",
+    urlPlaceholder: "Paste CSV URL here...",
+    btnLoad: "Load URL",
+    btnLoading: "Loading...",
+    orSeparator: "OR",
+    btnReset: "Clear Data",
+    mappingTitle: "Column Mapping Configuration",
+    labelTime: "Time Column (date/timestamp)",
+    labelGroup: "Group Column (text)",
+    labelValue: "Value Column (number)",
+    btnConfirm: "Confirm and Generate",
+    successLoad: "Data loaded. Please map columns.",
+    successProcess: "Visualizations ready!",
+    errorFile: "Error loading data.",
+    errorNetwork: "Network error during fetch.",
+    initialMessage: "Please upload a CSV file or provide a URL to see data visualizations.",
+    charts: {
+      c1: { title: "1. Activity Pulse", desc: "Density of event occurrences over time." },
+      c2: { title: "2. Continuity Audit", desc: "Stability of data logging throughout the year." },
+      c3: { title: "3. History Navigation", desc: "Trend line with an interactive time slider." },
+      c4: { title: "4. Structure Evolution", desc: "Changes in component proportions over time." },
+      c5: { title: "5. Ranking Dynamics", desc: "Changes in group positions over time." },
+      c6: { title: "6. Process Chronology", desc: "Sequence of events recorded over time." },
+      c7: { title: "7. Daily Cycle", desc: "Behavior patterns on a 24-hour scale." },
+      c8: { title: "8. Performance Volatility", desc: "Candlestick chart illustrating fluctuations." },
+      c9: { title: "9. Comparative Profile", desc: "Comparison of individual group contributions." },
+      c10: { title: "10. Size Hierarchy", desc: "Weight structure of individual elements." },
+      c11: { title: "11. Type Composition", desc: "Proportions of file types." },
+      c12: { title: "12. PR Efficiency Analysis", desc: "Examination of dependencies between variables." },
+      c13: { title: "13. Change Balance", desc: "Summary of added and removed values." },
+      c14: { title: "14. Variability Range", desc: "Visualization of value deviation areas." },
+      c15: { title: "15. Step Evolution", desc: "System state changes recorded over time." },
+    }
   }
 };
 
 function App() {
   const [lang, setLang] = useState('pl');
+  const [sourceType, setSourceType] = useState(null);
   const [processedData, setProcessedData] = useState(null);
-  const [dataLabel, setDataLabel] = useState('Wartość');
-  const [sourceType, setSourceType] = useState('TESTOWE');
-  const [url, setUrl] = useState('');
+  const [rawHeaders, setRawHeaders] = useState([]);
+  const [rawRows, setRawRows] = useState([]);
+  const [mapping, setMapping] = useState({ time: '', group: '', value: '' });
+  const [feedback, setFeedback] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [rawCsvLines, setRawCsvLines] = useState(null);
-  const [csvHeaders, setCsvHeaders] = useState([]);
-  const [mappingConfig, setMappingConfig] = useState({ timeAxis: '', labelAxis: '', valueAxis: '' });
-  const [showMappingMenu, setShowMappingMenu] = useState(false);
+  const [url, setUrl] = useState('');
 
   const t = (key) => {
     const keys = key.split('.');
     return keys.reduce((acc, curr) => acc && acc[curr], translations[lang]) || key;
   };
 
-  const processRawText = (text, sourceName) => {
-    const lines = text.trim().split('\n');
+  const processRawData = (text) => {
+    const lines = text.trim().split('\n').map(row => row.split(','));
     if (lines.length < 2) {
-      alert(t('errorData'));
+      setFeedback({ type: 'error', messageKey: 'errorFile' });
       return;
     }
-    const headers = lines[0].split(',').map(h => h.trim());
-    setCsvHeaders(headers);
-    setRawCsvLines(lines);
-    setSourceType(sourceName);
-    setMappingConfig({ 
-      timeAxis: headers[0] || '', 
-      labelAxis: headers[1] || headers[0] || '', 
-      valueAxis: headers[2] || headers[1] || '' 
-    });
-    setShowMappingMenu(true);
+    setRawHeaders(lines[0].map(h => h.trim()));
+    setRawRows(lines.slice(1));
+    setProcessedData(null);
+    setFeedback({ type: 'success', messageKey: 'successLoad' });
   };
 
-  const handleUrlLoad = async () => { /* ... (zostaje bez zmian) ... */ 
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => processRawData(event.target.result);
+    reader.readAsText(file);
+  };
+
+  const handleUrlLoad = async () => {
     if (!url) return;
     setIsLoading(true);
+    setFeedback(null);
     try {
       const response = await fetch(url);
+      if (!response.ok) throw new Error();
       const text = await response.text();
-      processRawText(text, 'URL');
-    } catch (error) {
-      alert(t('errorUrl'));
+      processRawData(text);
+    } catch (err) {
+      setFeedback({ type: 'error', messageKey: 'errorNetwork' });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleFileUpload = (e) => { /* ... (zostaje bez zmian) ... */
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      processRawText(event.target.result, 'PLIK');
-    };
-    reader.readAsText(file);
-  };
-
   const applyMapping = () => {
-    const { timeAxis, labelAxis, valueAxis } = mappingConfig;
-    const timeIdx = csvHeaders.indexOf(timeAxis);
-    const labelIdx = csvHeaders.indexOf(labelAxis);
-    const valueIdx = csvHeaders.indexOf(valueAxis);
+    const timeIdx = rawHeaders.indexOf(mapping.time);
+    const groupIdx = rawHeaders.indexOf(mapping.group);
+    const valueIdx = rawHeaders.indexOf(mapping.value);
 
-    if (timeIdx === -1 || labelIdx === -1 || valueIdx === -1) return;
+    const result = rawRows.map((row, index) => ({
+      id: index,
+      [mapping.time || 'timestamp']: timeIdx !== -1 ? row[timeIdx]?.trim() : null,
+      [mapping.group || 'author']: groupIdx !== -1 ? row[groupIdx]?.trim() : 'Default',
+      [mapping.value || 'value']: valueIdx !== -1 ? parseInt(row[valueIdx]?.trim(), 10) || 0 : 0
+    }));
 
-    const result = rawCsvLines.slice(1).map((line, index) => {
-      const parts = line.split(',');
-      if (parts.length <= Math.max(timeIdx, labelIdx, valueIdx)) return null;
-      
-      return {
-        id: index,
-        time: parts[timeIdx].trim(),
-        label: parts[labelIdx].trim(),
-        value: parseFloat(parts[valueIdx].trim()) || 0
-      };
-    }).filter(Boolean);
-
-    result.sort((a, b) => new Date(a.time) - new Date(b.time));
-
-    setDataLabel(valueAxis);
     setProcessedData(result);
-    setShowMappingMenu(false);
+    setSourceType('PLIK');
+    setFeedback({ type: 'success', messageKey: 'successProcess' });
   };
 
   const resetData = () => {
-    setProcessedData(null);
-    setDataLabel('Wartość');
-    setSourceType('TESTOWE');
-    setUrl('');
-    setShowMappingMenu(false);
+    setProcessedData(null); setRawHeaders([]); setRawRows([]); setSourceType(null);
+    setMapping({ time: '', group: '', value: '' }); setFeedback(null); setUrl('');
   };
+
+  const dashboardLayout = [
+    { type: 'beeswarm', title: t('charts.c1.title'), description: t('charts.c1.desc'), mapping: { groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'calendar', title: t('charts.c2.title'), description: t('charts.c2.desc'), mapping: { timeKey: mapping.time, valueKey: mapping.value } },
+    { type: 'timeZoom', title: t('charts.c3.title'), description: t('charts.c3.desc'), mapping: { timeKey: mapping.time, valueKey: mapping.value } },
+    { type: 'stream', title: t('charts.c4.title'), description: t('charts.c4.desc'), mapping: { timeKey: mapping.time, groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'bump', title: t('charts.c5.title'), description: t('charts.c5.desc'), mapping: { timeKey: mapping.time, groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'timeline', title: t('charts.c6.title'), description: t('charts.c6.desc'), mapping: { timeKey: mapping.time, groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'hourly', title: t('charts.c7.title'), description: t('charts.c7.desc'), mapping: { timeKey: mapping.time, valueKey: mapping.value } },
+    { type: 'volatility', title: t('charts.c8.title'), description: t('charts.c8.desc'), mapping: { timeKey: mapping.time, valueKey: mapping.value } },
+    { type: 'radar', title: t('charts.c9.title'), description: t('charts.c9.desc'), mapping: { groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'tree', title: t('charts.c10.title'), description: t('charts.c10.desc'), mapping: { groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'polar', title: t('charts.c11.title'), description: t('charts.c11.desc'), mapping: { groupKey: mapping.group, valueKey: mapping.value } },
+    { type: 'scatter', title: t('charts.c12.title'), description: t('charts.c12.desc'), mapping: { valueKey: mapping.value } },
+    { type: 'netChange', title: t('charts.c13.title'), description: t('charts.c13.desc'), mapping: { valueKey: mapping.value } },
+    { type: 'range', title: t('charts.c14.title'), description: t('charts.c14.desc'), mapping: { timeKey: mapping.time, valueKey: mapping.value } },
+    { type: 'step', title: t('charts.c15.title'), description: t('charts.c15.desc'), mapping: { timeKey: mapping.time, valueKey: mapping.value } }
+  ];
 
   return (
     <div className="app-root">
-      {/* ... Header i Kontrolki (zostają bez zmian z poprzedniego kodu) ... */}
+      <a href="https://github.com/OctoTS" target="_blank" rel="noopener noreferrer" className="github-org-link">
+        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" style={{ marginRight: '8px' }}>
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        <span>GitHub OctoTS</span>
+      </a>
+
+      <div className="language-bar">
+        <button onClick={() => setLang('pl')} className={`lang-btn ${lang === 'pl' ? 'active' : ''}`}>PL</button>
+        <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'active' : ''}`}>EN</button>
+      </div>
+
       <header className="main-header">
         <h1>{t('title')}</h1>
-        
+        <p>{t('subtitle')}</p>
+
         <div className="control-panel">
           <div className="input-group">
             <input type="text" placeholder={t('urlPlaceholder')} value={url} onChange={(e) => setUrl(e.target.value)} className="url-input" />
             <button onClick={handleUrlLoad} className="action-button" disabled={isLoading}>{isLoading ? t('btnLoading') : t('btnLoad')}</button>
           </div>
           <div className="divider">{t('orSeparator')}</div>
-          <div className="input-group">
-            <label className="file-label action-button">
-              {t('btnFile')}
-              <input type="file" accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} />
-            </label>
-          </div>
-          {processedData && <button onClick={resetData} className="reset-button">{t('btnReset')}</button>}
+          <label className="file-label">{t('btnFile')}<input type="file" accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} /></label>
+          {(processedData || rawRows.length > 0) && <button onClick={resetData} className="reset-button">{t('btnReset')}</button>}
         </div>
 
-        {/* Formularz Mapowania */}
-        {showMappingMenu && (
-          <div style={{ marginTop: '20px', padding: '20px', backgroundColor: 'var(--bg-color, rgba(255, 255, 255, 0.05))', borderRadius: '8px', border: '1px solid var(--border-color, #444)', maxWidth: '800px', margin: '20px auto' }}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '1.1rem' }}>Dopasuj kolumny z pliku CSV</h3>
-            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'center' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '5px', opacity: 0.8 }}>Czas / Sortowanie:</label>
-                <select value={mappingConfig.timeAxis} onChange={(e) => setMappingConfig({...mappingConfig, timeAxis: e.target.value})} style={{ padding: '8px', borderRadius: '4px', minWidth: '150px' }}>
-                  {csvHeaders.map(h => <option key={`time-${h}`} value={h}>{h}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '5px', opacity: 0.8 }}>Etykieta (Oś X):</label>
-                <select value={mappingConfig.labelAxis} onChange={(e) => setMappingConfig({...mappingConfig, labelAxis: e.target.value})} style={{ padding: '8px', borderRadius: '4px', minWidth: '150px' }}>
-                  {csvHeaders.map(h => <option key={`label-${h}`} value={h}>{h}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '5px', opacity: 0.8 }}>Wartość (Oś Y):</label>
-                <select value={mappingConfig.valueAxis} onChange={(e) => setMappingConfig({...mappingConfig, valueAxis: e.target.value})} style={{ padding: '8px', borderRadius: '4px', minWidth: '150px' }}>
-                  {csvHeaders.map(h => <option key={`val-${h}`} value={h}>{h}</option>)}
-                </select>
-              </div>
-              <button className="action-button" onClick={applyMapping} style={{ padding: '9px 20px', height: 'auto' }}>Zastosuj i rysuj</button>
+        {feedback ? (
+          <div className={`feedback-message feedback-${feedback.type}`}>{t(feedback.messageKey)}</div>
+        ) : (
+          !processedData && rawRows.length === 0 && (
+            <div className="feedback-message feedback-info">{t('initialMessage')}</div>
+          )
+        )}
+
+        {rawRows.length > 0 && !processedData && (
+          <div className="mapping-container">
+            <h3>{t('mappingTitle')}</h3>
+            <div className="mapping-controls">
+              <div className="mapping-field"><label>{t('labelTime')}</label><select value={mapping.time} onChange={e => setMapping({...mapping, time: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
+              <div className="mapping-field"><label>{t('labelGroup')}</label><select value={mapping.group} onChange={e => setMapping({...mapping, group: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
+              <div className="mapping-field"><label>{t('labelValue')}</label><select value={mapping.value} onChange={e => setMapping({...mapping, value: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
             </div>
+            <button className="confirm-button" onClick={applyMapping} disabled={!mapping.value}>{t('btnConfirm')}</button>
           </div>
         )}
       </header>
 
-      <main className="dashboard-grid">
-        <ChartCard title={t('charts.c1.title')} library="OctoTS (Chart.js)" source={sourceType} description={t('charts.c1.desc')} lang={lang} dataLabel={dataLabel}>
-          <VanillaOctoChart 
-            engine="chartjs" 
-            type="bar" 
-            chartId="octo-chart-1" 
-            title="Wykres Aktywności" 
-            yLabel={dataLabel} 
-            xLabel={mappingConfig.labelAxis} // Przekazujemy nazwę kolumny wybranej do etykiet X
-            data={processedData} 
-          />
-        </ChartCard>
-
-        <ChartCard title={t('charts.c2.title')} library="OctoTS (ECharts)" source={sourceType} description={t('charts.c2.desc')} lang={lang} dataLabel={dataLabel}>
-          <VanillaOctoChart 
-            engine="echarts" 
-            type="line" 
-            chartId="octo-chart-2" 
-            title="Wykres Ciągłości" 
-            yLabel={dataLabel} 
-            xLabel={mappingConfig.labelAxis}
-            data={processedData} 
-          />
-        </ChartCard>
-
-        <ChartCard title={t('charts.c3.title')} library="OctoTS (ECharts)" source={sourceType} description={t('charts.c3.desc')} lang={lang} dataLabel={dataLabel}>
-          <VanillaOctoChart 
-            engine="echarts" 
-            type="bar" 
-            chartId="octo-chart-3" 
-            title="Nawigacja" 
-            yLabel={dataLabel} 
-            xLabel={mappingConfig.labelAxis}
-            data={processedData} 
-          />
-        </ChartCard>
-      </main>
+      {processedData && (
+        <OctoDashboard 
+          data={processedData} 
+          layout={dashboardLayout} 
+          lang={lang} 
+        />
+      )}
     </div>
   );
 }
