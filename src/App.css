@@ -12,7 +12,6 @@
   left: 30px;
   display: flex;
   align-items: center;
-  gap: 8px;
   color: #1e293b;
   text-decoration: none;
   font-size: 14px;
@@ -81,6 +80,7 @@
   justify-content: center;
   gap: 20px;
   border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
 }
 
 .input-group {
@@ -113,8 +113,9 @@
   border: none;
 }
 
-.action-button:hover {
-  background-color: #535bf2;
+.action-button:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
 }
 
 .file-label {
@@ -135,11 +136,90 @@
   border: 1px solid #fecaca;
 }
 
+.feedback-message {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.feedback-error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.feedback-success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.feedback-info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.mapping-container {
+  margin-top: 30px;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  border: 1px solid #646cff;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.mapping-controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.mapping-field {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.mapping-field label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 5px;
+}
+
+.mapping-field select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  min-width: 180px;
+}
+
+.confirm-button {
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirm-button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
 .dashboard-grid {
-  maxWidth: 1200px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 50px auto;
   display: grid;
-  gridTemplateColumns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-template-columns: 1fr;
   gap: 30px;
 }
 
