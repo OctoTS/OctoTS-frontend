@@ -207,7 +207,7 @@ function App() {
 
       <main className="dashboard-grid">
         <ChartCard title={t('charts.c1.title')} library="Nivo" source={sourceType} description={t('charts.c1.desc')} disabled={processedData !== null && !isSupported(1)} lang={lang} dataLabel={dataLabel}>
-          <BeeswarmPlot data={processedData} dataLabel={dataLabel} />
+          <BeeswarmPlot />
         </ChartCard>
         <ChartCard title={t('charts.c2.title')} library="Nivo" source={sourceType} description={t('charts.c2.desc')} disabled={processedData !== null && !isSupported(2)} lang={lang} dataLabel={dataLabel}>
           <CalendarActivity data={processedData} dataLabel={dataLabel} />
