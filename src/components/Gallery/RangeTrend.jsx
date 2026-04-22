@@ -1,42 +1,51 @@
-import React from 'react';
-import Chart from 'react-apexcharts';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-export const RangeTrend = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey || !config.timeKey) return null;
-  const { valueKey, timeKey } = config;
+const DEMO_DATA = [
+  { date: '2024-01-01', value: 10 }, { date: '2024-01-02', value: 25 },
+  { date: '2024-01-03', value: 15 }, { date: '2024-01-04', value: 30 },
+  { date: '2024-01-05', value: 22 },
+];
 
-  const translations = {
-    pl: { range: 'Zakres' },
-    en: { range: 'Range' }
-  };
-  const t = translations[lang] || translations.en;
+export const RangeTrend = ({ engine = 'apex', chartType = 'area', rawData, options = {} }) => {
+  const containerRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const series = [{
-    name: config.labelY || t.range,
-    data: data.map(item => ({
-      x: new Date(item[timeKey]).getTime(),
-      y: [
-        Math.floor(parseFloat(item[valueKey]) * 0.85),
-        Math.ceil(parseFloat(item[valueKey]) * 1.15)
-      ]
-    }))
-  }];
+  const hasData = Array.isArray(rawData) && rawData.length > 0;
+  const isDemo = !hasData;
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
 
-  const options = {
-    chart: { type: 'area', background: 'transparent', toolbar: { show: false } },
-    colors: ['#646cff'],
-    fill: { type: 'solid', opacity: 0.2 },
-    stroke: { curve: 'smooth', width: 2 },
-    theme: { mode: 'dark' },
-    xaxis: { type: 'datetime', labels: { style: { colors: '#888' } } },
-    yaxis: { labels: { style: { colors: '#888' } } },
-    grid: { borderColor: '#333' },
-    tooltip: { theme: 'dark' }
-  };
+  const firstKey = hasData ? Object.keys(rawData[0])[1] : 'date';
+  const secondKey = hasData ? Object.keys(rawData[0])[2] : 'value';
+
+  const xKey = options.timeKey || options.xKey || (isDemo ? 'date' : firstKey);
+  const yKey = options.valueKey || options.yKey || (isDemo ? 'value' : secondKey);
+
+  useEffect(() => {
+    if (window.makeplot && containerRef.current) {
+      containerRef.current.innerHTML = '';
+      setErrorMsg(null);
+      try {
+        const finalData = [{
+          name: 'Value',
+          data: dataToProcess.map(d => ({
+            x: d[xKey] ? String(d[xKey]).trim() : 'N/A',
+            y: isNaN(parseFloat(d[yKey])) ? 0 : parseFloat(d[yKey])
+          }))
+        }];
+
+        const plot = window.makeplot(chartType, finalData, { ...options, series: finalData }, engine);
+        if (plot) containerRef.current.appendChild(plot);
+      } catch (err) {
+        setErrorMsg(err.message);
+      }
+    }
+  }, [rawData, xKey, yKey]);
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <Chart options={options} series={series} type="area" height="100%" />
-    </div>
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={dataToProcess} options={options}>
+      {errorMsg && <div style={{ color: 'red', textAlign: 'center' }}>Error: {errorMsg}</div>}
+      <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
+    </ChartSnippetWrapper>
   );
 };

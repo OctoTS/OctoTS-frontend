@@ -1,51 +1,80 @@
-import React from 'react';
-import ReactECharts from 'echarts-for-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-export const TimeZoomPlot = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey || !config.timeKey) return null;
-  const { valueKey, timeKey } = config;
+const DEMO_DATA = [
+  { t: '2023-01-01', v: 10 }, { t: '2023-01-02', v: 22 }, { t: '2023-01-03', v: 15 },
+  { t: '2023-01-04', v: 34 }, { t: '2023-01-05', v: 12 }, { t: '2023-01-06', v: 45 },
+  { t: '2023-01-07', v: 30 }, { t: '2023-01-08', v: 55 }, { t: '2023-01-09', v: 40 },
+  { t: '2023-01-10', v: 48 }, { t: '2023-01-11', v: 32 }, { t: '2023-01-12', v: 60 }
+];
 
-  const translations = {
-    pl: { value: 'Wartość' },
-    en: { value: 'Value' }
-  };
-  const t = translations[lang] || translations.en;
+const DEMO_OPTIONS = {
+  timeKey: 't',
+  valueKey: 'v'
+};
 
-  const xAxisData = data.map(d => d[timeKey]);
-  const seriesData = data.map(d => d[valueKey]);
+export const TimeZoomPlot = ({ engine = 'echarts', chartType = 'line', rawData, options = {} }) => {
+  const containerRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const option = {
+  const isDemo = !rawData || rawData.length === 0;
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
+
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const timeKey = activeOptions.timeKey || activeOptions.xKey || 'time';
+  const valueKey = activeOptions.valueKey || activeOptions.yKey || 'value';
+
+  const xData = dataToProcess.map(d => String(d[timeKey] || ''));
+  const yData = dataToProcess.map(d => parseFloat(d[valueKey]) || 0);
+
+  const chartOptions = {
     tooltip: { trigger: 'axis' },
-    xAxis: {
-      type: 'category',
-      data: xAxisData,
-      axisLabel: { color: '#888' }
-    },
-    yAxis: { 
-      type: 'value',
-      axisLabel: { color: '#888' },
-      splitLine: { lineStyle: { color: '#333' } }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '60px',
-      top: '10%',
-      containLabel: true
-    },
+    grid: { bottom: 80 },
+    xAxis: { type: 'category', data: xData },
+    yAxis: { type: 'value' },
     dataZoom: [
-      { type: 'slider', bottom: '10px', height: 25 },
-      { type: 'inside' }
+      { type: 'slider', start: 0, end: 100 },
+      { type: 'inside', start: 0, end: 100 }
     ],
-    series: [{
-      name: valueKey || t.value,
-      type: 'line',
-      smooth: true,
-      areaStyle: { opacity: 0.2 },
-      data: seriesData,
-      color: '#3498db'
-    }]
+    series: [
+      {
+        data: yData,
+        type: 'line',
+        smooth: true,
+        areaStyle: { opacity: 0.1 }
+      }
+    ],
+    ...activeOptions
   };
 
-  return <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />;
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && xData.length > 0) {
+      containerRef.current.innerHTML = '';
+      setErrorMsg(null);
+      try {
+        const plotElement = window.makeplot(chartType, dataToProcess, chartOptions, engine);
+        if (plotElement) {
+          containerRef.current.appendChild(plotElement);
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        } else {
+          setErrorMsg('Library did not return an HTML element.');
+        }
+      } catch (err) {
+        console.error("Error in TimeZoomPlot:", err);
+        setErrorMsg(err.message || 'Unknown library error');
+      }
+    }
+  }, [chartType, engine, dataToProcess, timeKey, valueKey]);
+
+  return (
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={dataToProcess} options={chartOptions}>
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
+      <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
+    </ChartSnippetWrapper>
+  );
 };

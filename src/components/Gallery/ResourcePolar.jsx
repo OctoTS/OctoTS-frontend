@@ -1,48 +1,92 @@
-import React from 'react';
-import { PolarArea } from 'react-chartjs-2';
-import { Chart as ChartJS, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
+const DEMO_DATA = [
+  { label: 'JavaScript', val: 45 },
+  { label: 'TypeScript', val: 75 },
+  { label: 'Python', val: 60 },
+  { label: 'HTML/CSS', val: 30 },
+  { label: 'Go', val: 20 },
+];
 
-export const ResourcePolar = ({ data, config }) => {
-  if (!data || !config || !config.valueKey || !config.groupKey) return null;
-  const { valueKey, groupKey } = config;
+const DEMO_OPTIONS = {
+  categoryKey: 'label',
+  valueKey: 'val'
+};
 
-  const categories = Array.from(new Set(data.map(item => item[groupKey])));
-  const values = categories.map(cat => 
-    data.filter(d => d[groupKey] === cat)
-        .reduce((sum, curr) => sum + (parseFloat(curr[valueKey]) || 0), 0)
+export const ResourcePolar = ({ engine = 'chartjs', chartType = 'doughnut', rawData, options = {} }) => {
+  const containerRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const isDemo = !rawData || rawData.length === 0;
+
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const chartData = {
-    labels: categories,
-    datasets: [{
-      data: values,
-      backgroundColor: [
-        'rgba(100, 108, 255, 0.5)',
-        'rgba(255, 99, 132, 0.5)',
-        'rgba(255, 205, 86, 0.5)',
-        'rgba(75, 192, 192, 0.5)',
-        'rgba(54, 162, 235, 0.5)'
-      ],
-      borderWidth: 1
-    }]
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const categoryKey = activeOptions.categoryKey || activeOptions.groupKey || 'category';
+  const valueKey = activeOptions.valueKey || activeOptions.yKey || 'value';
+
+  const labels = dataToProcess.map(d => d[categoryKey] ? String(d[categoryKey]).trim() : 'Unknown');
+  const dataValues = dataToProcess.map(d => {
+    const parsedY = parseFloat(d[valueKey]);
+    return isNaN(parsedY) ? 0 : parsedY;
+  });
+
+  const finalData = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Size',
+        data: dataValues,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+          'rgba(255, 206, 86, 0.6)',
+          'rgba(75, 192, 192, 0.6)',
+          'rgba(153, 102, 255, 0.6)'
+        ]
+      }
+    ]
   };
 
-  const options = {
+  const { categoryKey: _, valueKey: __, ...safeOptions } = activeOptions;
+
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    scales: { 
-      r: { 
-        grid: { color: '#333' }, 
-        ticks: { display: false },
-        angleLines: { color: '#333' }
-      } 
-    },
-    plugins: {
-      legend: { labels: { color: '#888', font: { size: 10 } } }
-    }
+    ...safeOptions
   };
 
-  return <PolarArea data={chartData} options={options} />;
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.labels.length > 0) {
+      containerRef.current.innerHTML = '';
+      setErrorMsg(null);
+
+      try {
+        const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+
+        if (plotElement) {
+          containerRef.current.appendChild(plotElement);
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        } else {
+          setErrorMsg('Library did not return an HTML element.');
+        }
+      } catch (err) {
+        console.error("Error in ResourcePolar:", err);
+        setErrorMsg(err.message || 'Unknown library error');
+      }
+    }
+  }, [chartType, engine, dataToProcess, categoryKey, valueKey]);
+
+  return (
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions}>
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
+      <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
+    </ChartSnippetWrapper>
+  );
 };

@@ -1,42 +1,91 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler } from 'chart.js';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
+const DEMO_DATA = [
+  { t: '10:00', v: 1 },
+  { t: '11:00', v: 3 },
+  { t: '12:00', v: 3 },
+  { t: '13:00', v: 5 },
+  { t: '14:00', v: 2 },
+  { t: '15:00', v: 6 },
+];
 
-export const StepEvolution = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey || !config.timeKey) return null;
-  const { valueKey, timeKey } = config;
+const DEMO_OPTIONS = {
+  timeKey: 't',
+  valueKey: 'v'
+};
 
-  const translations = {
-    pl: { label: 'Ewolucja' },
-    en: { label: 'Evolution' }
+export const StepEvolution = ({ engine = 'chartjs', chartType = 'line', rawData, options = {} }) => {
+  const containerRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const isDemo = !rawData || rawData.length === 0;
+
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
+
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const timeKey = activeOptions.timeKey || activeOptions.xKey || 'time';
+  const valueKey = activeOptions.valueKey || activeOptions.yKey || 'value';
+
+  const labels = dataToProcess.map(d => d[timeKey] ? String(d[timeKey]).trim() : 'Unknown');
+  const dataValues = dataToProcess.map(d => {
+    const parsedY = parseFloat(d[valueKey]);
+    return isNaN(parsedY) ? 0 : parsedY;
+  });
+
+  const finalData = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Step Evolution',
+        data: dataValues,
+        borderColor: '#a855f7',
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        stepped: true,
+        fill: true,
+        borderWidth: 2
+      }
+    ]
   };
-  const t = translations[lang] || translations.en;
 
-  const chartData = {
-    labels: data.map(item => item[timeKey]?.split('T')[0] || item[timeKey]),
-    datasets: [{
-      label: t.label,
-      data: data.map(item => parseFloat(item[valueKey]) || 0),
-      stepped: true,
-      borderColor: '#646cff',
-      backgroundColor: 'rgba(100, 108, 255, 0.1)',
-      fill: true,
-      pointRadius: 4,
-      pointBackgroundColor: '#646cff'
-    }]
-  };
+  const { timeKey: _, valueKey: __, ...safeOptions } = activeOptions;
 
-  const options = {
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    scales: {
-      x: { grid: { color: '#333' }, ticks: { color: '#888' } },
-      y: { grid: { color: '#333' }, ticks: { color: '#888' }, beginAtZero: true }
-    },
-    plugins: { legend: { display: false } }
+    ...safeOptions
   };
 
-  return <Line data={chartData} options={options} />;
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.labels.length > 0) {
+      containerRef.current.innerHTML = '';
+      setErrorMsg(null);
+
+      try {
+        const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+
+        if (plotElement) {
+          containerRef.current.appendChild(plotElement);
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        } else {
+          setErrorMsg('Library did not return an HTML element.');
+        }
+      } catch (err) {
+        console.error("Error in StepEvolution:", err);
+        setErrorMsg(err.message || 'Unknown library error');
+      }
+    }
+  }, [chartType, engine, dataToProcess, timeKey, valueKey]);
+
+  return (
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions}>
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
+      <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
+    </ChartSnippetWrapper>
+  );
 };
