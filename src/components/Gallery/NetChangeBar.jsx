@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 
-// 0a. Definiujemy dane demo (fallback) dla Stacked Bar Chart
 const DEMO_DATA = [
   { day: 'Mon', type: 'Dodane', amount: 44 },
   { day: 'Mon', type: 'Usunięte', amount: -15 },
@@ -18,7 +17,6 @@ const DEMO_DATA = [
   { day: 'Sun', type: 'Usunięte', amount: -12 }
 ];
 
-// 0b. Domyślne opcje dla danych demo
 const DEMO_OPTIONS = {
   xKey: 'day',
   groupBy: 'type',
