@@ -1,12 +1,83 @@
-import React from 'react';
-import Chart from 'react-apexcharts';
-import { moduleTreeData } from '../../data/mockData';
+import React, { useEffect, useRef } from 'react';
 
-export const ModuleTree = () => {
-  const options = {
-    chart: { type: 'treemap', background: 'transparent', toolbar: { show: false } },
+const DEMO_DATA = [
+  { module: 'Authentication', size: 120 },
+  { module: 'Dashboard', size: 85 },
+  { module: 'Payment Gateway', size: 200 },
+  { module: 'User Profile', size: 45 },
+  { module: 'Settings', size: 30 },
+  { module: 'Notifications', size: 70 },
+  { module: 'Reporting', size: 150 },
+];
+
+const DEMO_OPTIONS = {
+  labelKey: 'module',
+  valueKey: 'size'
+};
+
+export const ModuleTree = ({ engine = 'apex', chartType = 'treemap', rawData, options = {} }) => {
+  const containerRef = useRef(null);
+
+  const isDemo = !rawData || rawData.length === 0;
+  
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const activeOptions = isDemo && Object.keys(options).length === 0 ? DEMO_OPTIONS : { ...DEMO_OPTIONS, ...options };
+
+  const labelKey = activeOptions.labelKey || 'label';
+  const valueKey = activeOptions.valueKey || 'value';
+
+  const finalData = [
+    {
+      data: dataToProcess.map(d => {
+        const parsedY = parseFloat(d[valueKey]);
+        return {
+          x: d[labelKey] ? String(d[labelKey]).trim() : 'Nieznany',
+          y: isNaN(parsedY) ? 0 : parsedY
+        };
+      })
+    }
+  ];
+
+  const { labelKey: _, valueKey: __, ...safeOptions } = activeOptions;
+
+  const chartOptions = {
+    chart: { 
+      type: chartType, 
+      background: 'transparent', 
+      toolbar: { show: false } 
+    },
     theme: { mode: 'dark' },
-    colors: ['#646cff']
+    colors: ['#646cff'],
+    series: finalData, 
+    ...safeOptions
   };
-  return <Chart options={options} series={moduleTreeData} type="treemap" height="100%" />;
+
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData[0].data.length > 0) {
+      containerRef.current.innerHTML = '';
+      
+      const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+      
+      if (plotElement) {
+        containerRef.current.appendChild(plotElement);
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+      }
+    }
+  }, [chartType, engine, dataToProcess, labelKey, valueKey]);
+
+  return (
+    <div style={{ height: '100%', width: '100%' }}>
+      {isDemo && (
+        <div style={{
+          position: 'absolute', top: 10, right: 10, zIndex: 10,
+          background: 'rgba(255,255,255,0.1)', color: '#ccc', 
+          padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'
+        }}>
+          Tryb Demo
+        </div>
+      )}
+      
+      <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+    </div>
+  );
 };

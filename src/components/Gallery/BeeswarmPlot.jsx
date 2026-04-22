@@ -96,7 +96,7 @@ export const BeeswarmPlot = ({ engine = 'nivo', chartType = 'swarmplot', rawData
   }, [chartType, engine, dataToProcess, sourceGroupKey, sourceValueKey]);
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       {isDemo && (
         <div style={{
           position: 'absolute', top: 10, right: 10, zIndex: 10,
@@ -106,7 +106,7 @@ export const BeeswarmPlot = ({ engine = 'nivo', chartType = 'swarmplot', rawData
           Tryb Demo
         </div>
       )}
-      <div ref={containerRef} style={{ height: '500px', width: '100%', background: '#fafafa' }} />
+      <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
     </div>
   );
 };

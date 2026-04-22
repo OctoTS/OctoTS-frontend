@@ -210,7 +210,7 @@ function App() {
           <BeeswarmPlot />
         </ChartCard>
         <ChartCard title={t('charts.c2.title')} library="Nivo" source={sourceType} description={t('charts.c2.desc')} disabled={processedData !== null && !isSupported(2)} lang={lang} dataLabel={dataLabel}>
-          <CalendarActivity data={processedData} dataLabel={dataLabel} />
+          <CalendarActivity/>
         </ChartCard>
         <ChartCard title={t('charts.c3.title')} library="ECharts" source={sourceType} description={t('charts.c3.desc')} disabled={processedData !== null && !isSupported(3)} lang={lang} dataLabel={dataLabel}>
           <TimeZoomPlot data={processedData} dataLabel={dataLabel} />
@@ -219,13 +219,13 @@ function App() {
           <StreamGraph data={processedData} dataLabel={dataLabel} />
         </ChartCard>
         <ChartCard title={t('charts.c5.title')} library="Nivo" source={sourceType} description={t('charts.c5.desc')} disabled={processedData !== null && !isSupported(5)} lang={lang} dataLabel={dataLabel}>
-          <BumpChart data={processedData} dataLabel={dataLabel} />
+          <BumpChart />
         </ChartCard>
         <ChartCard title={t('charts.c6.title')} library="ECharts" source={sourceType} description={t('charts.c6.desc')} disabled={processedData !== null && !isSupported(6)} lang={lang} dataLabel={dataLabel}>
-          <ProcessTimeline data={processedData} dataLabel={dataLabel} />
+          <ProcessTimeline />
         </ChartCard>
         <ChartCard title={t('charts.c7.title')} library="ECharts" source={sourceType} description={t('charts.c7.desc')} disabled={processedData !== null && !isSupported(7)} lang={lang} dataLabel={dataLabel}>
-          <HourlyCycle data={processedData} dataLabel={dataLabel} />
+          <HourlyCycle />
         </ChartCard>
         <ChartCard title={t('charts.c8.title')} library="ApexCharts" source={sourceType} description={t('charts.c8.desc')} disabled={processedData !== null && !isSupported(8)} lang={lang} dataLabel={dataLabel}>
           <VolatilityCandle data={processedData} dataLabel={dataLabel} />
@@ -234,16 +234,16 @@ function App() {
           <StatusRadar data={processedData} dataLabel={dataLabel} />
         </ChartCard>
         <ChartCard title={t('charts.c10.title')} library="ApexCharts" source={sourceType} description={t('charts.c10.desc')} disabled={processedData !== null && !isSupported(10)} lang={lang} dataLabel={dataLabel}>
-          <ModuleTree data={processedData} dataLabel={dataLabel} />
+           <ModuleTree /> {/* zwraca nam jakis blad ale nie krytyczne trzeba to sprawdzic w bibliotece */}
         </ChartCard>
         <ChartCard title={t('charts.c11.title')} library="Chart.js" source={sourceType} description={t('charts.c11.desc')} disabled={processedData !== null && !isSupported(11)} lang={lang} dataLabel={dataLabel}>
           <ResourcePolar data={processedData} dataLabel={dataLabel} />
         </ChartCard>
         <ChartCard title={t('charts.c12.title')} library="Chart.js" source={sourceType} description={t('charts.c12.desc')} disabled={processedData !== null && !isSupported(12)} lang={lang} dataLabel={dataLabel}>
-          <EfficiencyScatter data={processedData} dataLabel={dataLabel} />
+          <EfficiencyScatter />
         </ChartCard>
         <ChartCard title={t('charts.c13.title')} library="ApexCharts" source={sourceType} description={t('charts.c13.desc')} disabled={processedData !== null && !isSupported(13)} lang={lang} dataLabel={dataLabel}>
-          <NetChangeBar data={processedData} dataLabel={dataLabel} />
+          <NetChangeBar />
         </ChartCard>
         <ChartCard title={t('charts.c14.title')} library="ApexCharts" source={sourceType} description={t('charts.c14.desc')} disabled={processedData !== null && !isSupported(14)} lang={lang} dataLabel={dataLabel}>
           <RangeTrend data={processedData} dataLabel={dataLabel} />
