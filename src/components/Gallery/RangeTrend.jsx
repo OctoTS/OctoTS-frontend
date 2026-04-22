@@ -1,45 +1,35 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
-import { rangeMetricsData } from '../../data/mockData';
 
-export const RangeTrend = ({ data, lang, dataLabel }) => {
+export const RangeTrend = ({ data, config, lang }) => {
+  if (!data || !config || !config.valueKey || !config.timeKey) return null;
+  const { valueKey, timeKey } = config;
+
   const translations = {
-    pl: { range: 'Zakres odchylenia' },
-    en: { range: 'Deviation Range' }
+    pl: { range: 'Zakres' },
+    en: { range: 'Range' }
   };
-
-  const t = translations[lang] || translations.pl;
-
-  const finalSeriesData = data ? data.map(item => ({
-    x: new Date(item.timestamp).getTime(),
-    y: [
-      Math.floor(item[dataLabel] * 0.85),
-      Math.ceil(item[dataLabel] * 1.15)
-    ]
-  })) : rangeMetricsData;
+  const t = translations[lang] || translations.en;
 
   const series = [{
-    name: data ? `${dataLabel} (${t.range})` : `LoC ${t.range}`,
-    data: finalSeriesData
+    name: config.labelY || t.range,
+    data: data.map(item => ({
+      x: new Date(item[timeKey]).getTime(),
+      y: [
+        Math.floor(parseFloat(item[valueKey]) * 0.85),
+        Math.ceil(parseFloat(item[valueKey]) * 1.15)
+      ]
+    }))
   }];
 
   const options = {
-    chart: {
-      type: 'area',
-      background: 'transparent',
-      toolbar: { show: false }
-    },
+    chart: { type: 'area', background: 'transparent', toolbar: { show: false } },
     colors: ['#646cff'],
     fill: { type: 'solid', opacity: 0.2 },
     stroke: { curve: 'smooth', width: 2 },
     theme: { mode: 'dark' },
-    xaxis: {
-      type: 'datetime',
-      labels: { style: { colors: '#888' } }
-    },
-    yaxis: {
-      labels: { style: { colors: '#888' } }
-    },
+    xaxis: { type: 'datetime', labels: { style: { colors: '#888' } } },
+    yaxis: { labels: { style: { colors: '#888' } } },
     grid: { borderColor: '#333' },
     tooltip: { theme: 'dark' }
   };

@@ -1,37 +1,35 @@
 import React from 'react';
 import { Radar } from 'react-chartjs-2';
 import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
-import { statusRadarData } from '../../data/mockData';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-export const StatusRadar = ({ data, lang, dataLabel }) => {
+export const StatusRadar = ({ data, config, lang }) => {
+  if (!data || !config || !config.valueKey || !config.groupKey) return null;
+  const { valueKey, groupKey } = config;
+
   const translations = {
-    pl: { label: 'Wkład per Autor' },
-    en: { label: 'Contribution by Author' }
+    pl: { label: 'Wkład' },
+    en: { label: 'Contribution' }
   };
+  const t = translations[lang] || translations.en;
 
-  const t = translations[lang] || translations.pl;
-  let finalData = statusRadarData;
+  const groups = Array.from(new Set(data.map(item => item[groupKey])));
+  const values = groups.map(g => 
+    data.filter(d => d[groupKey] === g)
+        .reduce((sum, curr) => sum + (parseFloat(curr[valueKey]) || 0), 0)
+  );
 
-  if (data) {
-    const authorStats = data.reduce((acc, curr) => {
-      acc[curr.author] = (acc[curr.author] || 0) + (curr[dataLabel] || 0);
-      return acc;
-    }, {});
-
-    finalData = {
-      labels: Object.keys(authorStats),
-      datasets: [{
-        label: `${dataLabel} (${t.label})`,
-        data: Object.values(authorStats),
-        backgroundColor: 'rgba(100, 108, 255, 0.2)',
-        borderColor: '#646cff',
-        pointBackgroundColor: '#646cff',
-        pointBorderColor: '#fff',
-      }]
-    };
-  }
+  const chartData = {
+    labels: groups,
+    datasets: [{
+      label: t.label,
+      data: values,
+      backgroundColor: 'rgba(100, 108, 255, 0.2)',
+      borderColor: '#646cff',
+      pointBackgroundColor: '#646cff',
+    }]
+  };
 
   const options = {
     responsive: true,
@@ -40,20 +38,14 @@ export const StatusRadar = ({ data, lang, dataLabel }) => {
       r: {
         angleLines: { color: '#333' },
         grid: { color: '#333' },
-        pointLabels: { color: '#888', font: { size: 10 } },
+        pointLabels: { color: '#888' },
         ticks: { display: false }
       }
     },
     plugins: {
-      legend: {
-        labels: { color: '#888' }
-      }
+      legend: { display: false }
     }
   };
 
-  return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <Radar data={finalData} options={options} />
-    </div>
-  );
+  return <Radar data={chartData} options={options} />;
 };

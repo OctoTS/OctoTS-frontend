@@ -1,14 +1,41 @@
 import React from 'react';
 import { ResponsiveStream } from '@nivo/stream';
-const data = Array.from({ length: 15 }, () => ({ JS: Math.random()*10, TS: Math.random()*20, Py: Math.random()*5 }));
-export const StreamGraph = () => (
-  <ResponsiveStream
-    data={data}
-    keys={['JS', 'TS', 'Py']}
-    margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
-    axisBottom={null}
-    offsetType="silhouette"
-    colors={{ scheme: 'nivo' }}
-    fillOpacity={0.8}
-  />
-);
+
+export const StreamGraph = ({ data, config }) => {
+  if (!data || !config || !config.valueKey || !config.groupKey || !config.timeKey) return null;
+  const { valueKey, groupKey, timeKey } = config;
+
+  const uniqueGroups = Array.from(new Set(data.map(item => item[groupKey])));
+  
+  const groupedByTime = data.reduce((acc, item) => {
+    const time = item[timeKey]?.split('T')[0] || item[timeKey];
+    if (!acc[time]) {
+      acc[time] = { timestamp: time };
+      uniqueGroups.forEach(g => acc[time][g] = 0);
+    }
+    acc[time][item[groupKey]] = (acc[time][item[groupKey]] || 0) + (parseFloat(item[valueKey]) || 0);
+    return acc;
+  }, {});
+
+  const chartData = Object.values(groupedByTime).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  if (chartData.length < 2) return null;
+
+  return (
+    <div style={{ height: '100%', width: '100%' }}>
+      <ResponsiveStream
+        data={chartData}
+        keys={uniqueGroups}
+        margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
+        axisBottom={{
+          tickSize: 5,
+          tickPadding: 5,
+          legend: '',
+        }}
+        offsetType="silhouette"
+        colors={{ scheme: 'nivo' }}
+        fillOpacity={0.8}
+      />
+    </div>
+  );
+};
