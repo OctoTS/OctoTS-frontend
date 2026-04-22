@@ -1,30 +1,31 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
-import { longTermData } from '../../data/mockData';
 
-export const TimeZoomPlot = ({ data, lang, dataLabel }) => {
+export const TimeZoomPlot = ({ data, config, lang }) => {
+  if (!data || !config || !config.valueKey || !config.timeKey) return null;
+  const { valueKey, timeKey } = config;
+
   const translations = {
     pl: { value: 'Wartość' },
     en: { value: 'Value' }
   };
+  const t = translations[lang] || translations.en;
 
-  const t = translations[lang] || translations.pl;
-
-  const xAxisData = data
-    ? data.map(d => d.timestamp)
-    : longTermData.map(d => d.date);
-
-  const seriesData = data
-    ? data.map(d => d[dataLabel])
-    : longTermData.map(d => d.value);
+  const xAxisData = data.map(d => d[timeKey]);
+  const seriesData = data.map(d => d[valueKey]);
 
   const option = {
     tooltip: { trigger: 'axis' },
     xAxis: {
       type: 'category',
-      data: xAxisData
+      data: xAxisData,
+      axisLabel: { color: '#888' }
     },
-    yAxis: { type: 'value' },
+    yAxis: { 
+      type: 'value',
+      axisLabel: { color: '#888' },
+      splitLine: { lineStyle: { color: '#333' } }
+    },
     grid: {
       left: '3%',
       right: '4%',
@@ -37,7 +38,7 @@ export const TimeZoomPlot = ({ data, lang, dataLabel }) => {
       { type: 'inside' }
     ],
     series: [{
-      name: data ? dataLabel : t.value,
+      name: valueKey || t.value,
       type: 'line',
       smooth: true,
       areaStyle: { opacity: 0.2 },

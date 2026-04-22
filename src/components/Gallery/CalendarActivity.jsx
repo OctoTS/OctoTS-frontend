@@ -1,24 +1,32 @@
 import React from 'react';
 import { ResponsiveCalendar } from '@nivo/calendar';
-import { calendarData } from '../../data/mockData';
 
-export const CalendarActivity = ({ data, dataLabel }) => {
-  const finalData = data ? data.map(item => ({
-    day: item.timestamp.split('T')[0],
-    value: item[dataLabel]
-  })) : calendarData;
+export const CalendarActivity = ({ data, config }) => {
+  if (!data || !config || !config.valueKey || !config.timeKey) return null;
 
-  const years = finalData
+  const { valueKey, timeKey } = config;
+  const validData = data.filter(item => 
+    item && item[timeKey] && item[valueKey] !== undefined
+  );
+
+  const chartData = validData.map(item => ({
+    day: item[timeKey].toString().includes('T') ? item[timeKey].split('T')[0] : item[timeKey],
+    value: parseFloat(item[valueKey]) || 0
+  }));
+
+  if (chartData.length === 0) return null;
+
+  const years = chartData
     .map(d => parseInt(d.day.split('-')[0]))
     .filter(n => !isNaN(n));
 
-  const minYear = years.length > 0 ? Math.min(...years) : 2025;
-  const maxYear = years.length > 0 ? Math.max(...years) : 2025;
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <ResponsiveCalendar
-        data={finalData}
+        data={chartData}
         from={`${minYear}-01-01`}
         to={`${maxYear}-12-31`}
         emptyColor="#f1f2f6"

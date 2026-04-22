@@ -1,39 +1,41 @@
 import React from 'react';
 import { ResponsiveSwarmPlot } from '@nivo/swarmplot';
-import { swarmData } from '../../data/mockData';
 
-export const BeeswarmPlot = ({ data, lang, dataLabel }) => {
+export const BeeswarmPlot = ({ data, config, lang }) => {
+  if (!data || !config || !config.valueKey || !config.groupKey) return null;
+
+  const { valueKey, groupKey } = config;
   const translations = {
-    pl: { author: 'Autor', activity: 'Wartość aktywności' },
-    en: { author: 'Author', activity: 'Activity Value' }
+    pl: { author: 'Grupa', activity: 'Wartość' },
+    en: { author: 'Group', activity: 'Value' }
   };
-
   const t = translations[lang] || translations.pl;
 
-  const finalData = data ? data.map((item, index) => ({
-    id: `${item.author}-${index}`,
-    group: item.author,
-    value: item[dataLabel],
-    volume: item[dataLabel]
-  })) : swarmData;
+  const validData = data.filter(item => 
+    item && item[groupKey] !== undefined && item[valueKey] !== undefined
+  );
 
-  const allValues = finalData.map(d => d.volume);
-  const minValue = Math.min(...allValues);
-  const maxValue = Math.max(...allValues);
+  if (validData.length === 0) return null;
 
-  const groups = data 
-    ? Array.from(new Set(data.map(d => d.author))) 
-    : ['Backend', 'Frontend', 'DevOps'];
+  const chartData = validData.map((item, index) => ({
+    id: `${item[groupKey]}-${index}`,
+    group: item[groupKey],
+    value: parseFloat(item[valueKey]) || 0,
+    volume: parseFloat(item[valueKey]) || 0
+  }));
+
+  const groups = Array.from(new Set(chartData.map(d => d.group)));
+  const metricValues = chartData.map(d => d.value);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <ResponsiveSwarmPlot
-        data={finalData}
+        data={chartData}
         groups={groups}
         value="value"
         size={{ 
           key: 'volume', 
-          values: [minValue, maxValue], 
+          values: [Math.min(...metricValues), Math.max(...metricValues)], 
           sizes: [6, 20] 
         }}
         forceStrength={4}
@@ -43,7 +45,7 @@ export const BeeswarmPlot = ({ data, lang, dataLabel }) => {
           tickSize: 10, 
           tickPadding: 5, 
           tickRotation: 0, 
-          legend: data ? t.author : t.activity, 
+          legend: t.author, 
           legendPosition: 'middle', 
           legendOffset: 32 
         }}

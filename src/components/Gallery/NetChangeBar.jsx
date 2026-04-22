@@ -1,39 +1,45 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
-import { netChangeData } from '../../data/mockData';
 
-export const NetChangeBar = () => {
+export const NetChangeBar = ({ data, config, lang }) => {
+  if (!data || !config || !config.valueKey) return null;
+
+  const { valueKey } = config;
+
+  const chartSeries = [
+    { 
+      name: lang === 'pl' ? 'Dodano' : 'Added', 
+      data: data.map(item => parseFloat(item[valueKey]) || 0) 
+    },
+    { 
+      name: lang === 'pl' ? 'Usunięto' : 'Removed', 
+      data: data.map(item => -(parseFloat(item[valueKey]) * 0.2) || 0) 
+    }
+  ];
+
   const options = {
     chart: { type: 'bar', stacked: true, background: 'transparent', toolbar: { show: false } },
     colors: ['#646cff', '#ff6384'],
     plotOptions: { bar: { borderRadius: 5 } },
     theme: { mode: 'dark' },
-    xaxis: { categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-
+    xaxis: { 
+      categories: data.map((_, i) => i + 1),
+      labels: { style: { colors: '#888' } }
+    },
+    yaxis: { labels: { style: { colors: '#888' } } },
     legend: {
       show: true,
       position: 'top',
       horizontalAlign: 'center',
-      labels: {
-        colors: '#64748b',
-        useSeriesColors: false
-      },
-      markers: {
-        width: 12,
-        height: 12,
-        radius: 12,
-      },
-      itemMargin: {
-        horizontal: 20,
-        vertical: 5
-      }
+      labels: { colors: '#64748b' }
     },
-    grid: {
-      borderColor: '#333',
-      strokeDasharray: 4
-    },
+    grid: { borderColor: '#333', strokeDasharray: 4 },
     tooltip: { theme: 'dark' }
-
   };
-  return <Chart options={options} series={netChangeData} type="bar" height="100%" />;
+
+  return (
+    <div style={{ height: '100%', width: '100%' }}>
+      <Chart options={options} series={chartSeries} type="bar" height="100%" />
+    </div>
+  );
 };
