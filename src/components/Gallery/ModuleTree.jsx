@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
 const DEMO_DATA = [
   { module: 'Authentication', size: 120 },
@@ -72,18 +73,14 @@ export const ModuleTree = ({ engine = 'apex', chartType = 'treemap', rawData, op
   }, [chartType, engine, dataToProcess, labelKey, valueKey]);
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      {isDemo && (
-        <div style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 10,
-          background: 'rgba(255,255,255,0.1)', color: '#ccc', 
-          padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'
-        }}>
-          Tryb Demo
-        </div>
-      )}
-      
-      <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
-    </div>
-  );
+      <ChartSnippetWrapper 
+        isDemo={isDemo}
+        chartType={chartType}
+        engine={engine}
+        data={finalData}
+        options={chartOptions}
+      >
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </ChartSnippetWrapper>
+    );
 };

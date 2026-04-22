@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
 const DEMO_DATA = [
   { id: '1', category: 'Zespół A', score: 45 },
@@ -34,7 +35,6 @@ export const BeeswarmPlot = ({ engine = 'nivo', chartType = 'swarmplot', rawData
   );
 
   const baseOptions = isDemo ? DEMO_OPTIONS : {};
-
   const activeOptions = { ...baseOptions, ...cleanOptions };
 
   const sourceGroupKey = activeOptions.groupBy || 'group'; 
@@ -54,7 +54,6 @@ export const BeeswarmPlot = ({ engine = 'nivo', chartType = 'swarmplot', rawData
   });
 
   const groups = Array.from(new Set(finalData.map(d => d.nivo_group)));
-
   const { groupBy, valueKey, ...safeOptions } = activeOptions;
 
   const chartOptions = {
@@ -86,7 +85,6 @@ export const BeeswarmPlot = ({ engine = 'nivo', chartType = 'swarmplot', rawData
     },
     ...safeOptions
   };
-
   useEffect(() => {
     if (window.makeplot && containerRef.current && finalData.length > 0) {
       containerRef.current.innerHTML = '';
@@ -95,24 +93,20 @@ export const BeeswarmPlot = ({ engine = 'nivo', chartType = 'swarmplot', rawData
       
       if (plotElement) {
         containerRef.current.appendChild(plotElement);
-        // Nasz hack na renderowanie
         setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
       }
     }
   }, [chartType, engine, dataToProcess, sourceGroupKey, sourceValueKey]);
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      {isDemo && (
-        <div style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 10,
-          background: 'rgba(0,0,0,0.05)', color: '#666',
-          padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'
-        }}>
-          Tryb Demo
-        </div>
-      )}
+    <ChartSnippetWrapper 
+      isDemo={isDemo}
+      chartType={chartType}
+      engine={engine}
+      data={finalData}
+      options={chartOptions}
+    >
       <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
-    </div>
+    </ChartSnippetWrapper>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
 const DEMO_DATA = [
   { task: 'Analiza wymagań', start: 0, end: 30 },
@@ -102,18 +102,14 @@ export const ProcessTimeline = ({ engine = 'echarts', chartType = 'bar', rawData
   }, [chartType, engine, dataToProcess, nameKey, startKey, endKey]);
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      {isDemo && (
-        <div style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 10,
-          background: 'rgba(0,0,0,0.05)', color: '#666',
-          padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'
-        }}>
-          Tryb Demo
-        </div>
-      )}
-      
+    <ChartSnippetWrapper 
+      isDemo={isDemo}
+      chartType={chartType}
+      engine={engine}
+      data={processedData} 
+      options={chartOptions}
+    >
       <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
-    </div>
+    </ChartSnippetWrapper>
   );
 };

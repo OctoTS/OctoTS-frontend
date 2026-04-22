@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
 const DEMO_DATA = [
   { author: 'Anna', timestamp: '2023-01-01', rank: 1 },
@@ -126,18 +127,14 @@ export const BumpChart = ({ engine = 'nivo', chartType = 'bump', rawData, option
   }, [chartType, engine, dataToProcess, groupBy, timeKey, valueKey]);
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      {isDemo && (
-        <div style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 10,
-          background: 'rgba(0,0,0,0.05)', color: '#666',
-          padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'
-        }}>
-          Tryb Demo
-        </div>
-      )}
-      
-      <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
-    </div>
-  );
+      <ChartSnippetWrapper 
+        isDemo={isDemo}
+        chartType={chartType}
+        engine={engine}
+        data={finalData}
+        options={chartOptions}
+      >
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </ChartSnippetWrapper>
+    );
 };
