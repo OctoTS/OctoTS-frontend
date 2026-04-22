@@ -29,7 +29,13 @@ export const NetChangeBar = ({ engine = 'apex', chartType = 'bar', rawData, opti
   const isDemo = !rawData || rawData.length === 0;
   
   const dataToProcess = isDemo ? DEMO_DATA : rawData;
-  const activeOptions = isDemo && Object.keys(options).length === 0 ? DEMO_OPTIONS : { ...DEMO_OPTIONS, ...options };
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
+
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+
+  const activeOptions = { ...baseOptions, ...cleanOptions };
 
   const xKey = activeOptions.xKey || 'x';
   const groupBy = activeOptions.groupBy || 'group';

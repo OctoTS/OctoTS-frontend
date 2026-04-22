@@ -101,6 +101,7 @@ function App() {
   const [rawHeaders, setRawHeaders] = useState([]);
   const [rawRows, setRawRows] = useState([]);
   const [mapping, setMapping] = useState({ time: '', group: '', value: '' });
+  const [draftMapping, setDraftMapping] = useState({ time: "", group: "", value: "" });
   const [feedback, setFeedback] = useState({ type: 'info', key: 'initialMessage' });
   const [isLoading, setIsLoading] = useState(false);
   const [url, setUrl] = useState('');
@@ -154,6 +155,7 @@ function App() {
       });
       return obj;
     });
+    setMapping(draftMapping);
     setProcessedData(result);
     setFeedback({ type: 'success', key: 'successProcess' });
   };
@@ -210,22 +212,22 @@ function App() {
           <div className="mapping-container">
             <h3>{t('mappingTitle')}</h3>
             <div className="mapping-controls">
-              <div className="mapping-field"><label>{t('labelTime')}</label><select value={mapping.time} onChange={e => setMapping({...mapping, time: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
-              <div className="mapping-field"><label>{t('labelGroup')}</label><select value={mapping.group} onChange={e => setMapping({...mapping, group: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
-              <div className="mapping-field"><label>{t('labelValue')}</label><select value={mapping.value} onChange={e => setMapping({...mapping, value: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
+              <div className="mapping-field"><label>{t('labelTime')}</label><select value={draftMapping.time} onChange={e => setDraftMapping({...draftMapping, time: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
+              <div className="mapping-field"><label>{t('labelGroup')}</label><select value={draftMapping.group} onChange={e => setDraftMapping({...draftMapping, group: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
+              <div className="mapping-field"><label>{t('labelValue')}</label><select value={draftMapping.value} onChange={e => setDraftMapping({...draftMapping, value: e.target.value})}><option value="">--</option>{rawHeaders.map(h => <option key={h} value={h}>{h}</option>)}</select></div>
             </div>
-            <button className="confirm-button" onClick={applyMapping} disabled={!mapping.value}>{t('btnConfirm')}</button>
+            <button className="confirm-button" onClick={applyMapping} disabled={!draftMapping.value}>{t('btnConfirm')}</button>
           </div>
         )}
       </header>
 
-      {processedData && (
+      {
         <main className="dashboard-grid">
           <ChartCard title={t('charts.c1.title')} library="Nivo" description={t('charts.c1.desc')} lang={lang}>
-            <BeeswarmPlot lang={lang} />
+            <BeeswarmPlot lang={lang} rawData={processedData} options={{groupBy: mapping.group, valueKey: mapping.value}} />
           </ChartCard>
           <ChartCard title={t('charts.c2.title')} library="Nivo" description={t('charts.c2.desc')} lang={lang}>
-            <CalendarActivity  />
+            <CalendarActivity rawData={processedData} options={{timeKey: mapping.time, valueKey: mapping.value}} />
           </ChartCard>
           <ChartCard title={t('charts.c3.title')} library="ECharts" description={t('charts.c3.desc')} lang={lang}>
             <TimeZoomPlot data={processedData} config={{ valueKey: mapping.value, timeKey: mapping.time }} lang={lang} />
@@ -234,7 +236,7 @@ function App() {
             <StreamGraph data={processedData} config={{ valueKey: mapping.value, groupKey: mapping.group, timeKey: mapping.time }} />
           </ChartCard>
           <ChartCard title={t('charts.c5.title')} library="Nivo" description={t('charts.c5.desc')} lang={lang}>
-            <BumpChart lang={lang} />
+            <BumpChart lang={lang} rawData={processedData} options={{timeKey: mapping.time, valueKey: mapping.value, groupBy: mapping.group}} />
           </ChartCard>
           <ChartCard title={t('charts.c6.title')} library="ECharts" description={t('charts.c6.desc')} lang={lang}>
             <ProcessTimeline />
@@ -249,16 +251,16 @@ function App() {
             <StatusRadar data={processedData} config={{ valueKey: mapping.value, groupKey: mapping.group }} lang={lang} />
           </ChartCard>
           <ChartCard title={t('charts.c10.title')} library="ApexCharts" description={t('charts.c10.desc')} lang={lang}>
-            <ModuleTree />
+            <ModuleTree rawData={processedData} options={{labelKey: mapping.group, valueKey: mapping.value}} />
           </ChartCard>
           <ChartCard title={t('charts.c11.title')} library="Chart.js" description={t('charts.c11.desc')} lang={lang}>
             <ResourcePolar data={processedData} config={{ valueKey: mapping.value, groupKey: mapping.group }} />
           </ChartCard>
           <ChartCard title={t('charts.c12.title')} library="Chart.js" description={t('charts.c12.desc')} lang={lang}>
-            <EfficiencyScatter />
+            <EfficiencyScatter rawData={processedData} options={{xKey: mapping.time, yKey: mapping.value, groupBy: mapping.group}} />
           </ChartCard>
           <ChartCard title={t('charts.c13.title')} library="ApexCharts" description={t('charts.c13.desc')} lang={lang}>
-            <NetChangeBar />
+            <NetChangeBar rawData={processedData} options={{xKey: mapping.time, valueKey: mapping.value, groupBy: mapping.group}} />
           </ChartCard>
           <ChartCard title={t('charts.c14.title')} library="ApexCharts" description={t('charts.c14.desc')} lang={lang}>
             <RangeTrend data={processedData} config={{ valueKey: mapping.value, timeKey: mapping.time }} />
@@ -267,7 +269,7 @@ function App() {
             <StepEvolution data={processedData} config={{ valueKey: mapping.value, timeKey: mapping.time }} />
           </ChartCard>
         </main>
-      )}
+      }
     </div>
   );
 }
