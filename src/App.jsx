@@ -124,6 +124,7 @@ function App() {
   };
 
   const handleFileUpload = (e) => {
+    setMapping({ time: '', group: '', value: '' });
     const file = e.target.files[0];
     if (!file) return;
     setFeedback(null);
@@ -161,7 +162,7 @@ function App() {
   };
 
   const resetData = () => {
-    setProcessedData(null); setRawHeaders([]); setRawRows([]);
+    setProcessedData(null); setRawHeaders([]); setRawRows([]); setDraftMapping({ time: '', group: '', value: '' });
     setMapping({ time: '', group: '', value: '' }); setFeedback({ type: 'info', key: 'initialMessage' }); setUrl('');
   };
 
