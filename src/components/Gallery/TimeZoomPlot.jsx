@@ -1,33 +1,53 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-const DEMO_DATA = [
-  { t: '2023-01-01', v: 10 }, { t: '2023-01-02', v: 22 }, { t: '2023-01-03', v: 15 },
-  { t: '2023-01-04', v: 34 }, { t: '2023-01-05', v: 12 }, { t: '2023-01-06', v: 45 },
-  { t: '2023-01-07', v: 30 }, { t: '2023-01-08', v: 55 }, { t: '2023-01-09', v: 40 },
-  { t: '2023-01-10', v: 48 }, { t: '2023-01-11', v: 32 }, { t: '2023-01-12', v: 60 }
-];
-
-const DEMO_OPTIONS = {
-  timeKey: 't',
-  valueKey: 'v'
+const DEMO_DATA = {
+  pl: [
+    { czas: '2023-01-01', wartosc: 10 }, { czas: '2023-01-02', wartosc: 22 }, { czas: '2023-01-03', wartosc: 15 },
+    { czas: '2023-01-04', wartosc: 34 }, { czas: '2023-01-05', wartosc: 12 }, { czas: '2023-01-06', wartosc: 45 },
+    { czas: '2023-01-07', wartosc: 30 }, { czas: '2023-01-08', wartosc: 55 }, { czas: '2023-01-09', wartosc: 40 },
+    { czas: '2023-01-10', wartosc: 48 }, { czas: '2023-01-11', wartosc: 32 }, { czas: '2023-01-12', wartosc: 60 }
+  ],
+  en: [
+    { time: '2023-01-01', value: 10 }, { time: '2023-01-02', value: 22 }, { time: '2023-01-03', value: 15 },
+    { time: '2023-01-04', value: 34 }, { time: '2023-01-05', value: 12 }, { time: '2023-01-06', value: 45 },
+    { time: '2023-01-07', value: 30 }, { time: '2023-01-08', value: 55 }, { time: '2023-01-09', value: 40 },
+    { time: '2023-01-10', value: 48 }, { time: '2023-01-11', value: 32 }, { time: '2023-01-12', value: 60 }
+  ]
 };
 
-export const TimeZoomPlot = ({ engine = 'echarts', chartType = 'line', rawData, options = {} }) => {
+const DEMO_OPTIONS = {
+  pl: { timeKey: 'czas', valueKey: 'wartosc' },
+  en: { timeKey: 'time', valueKey: 'value' }
+};
+
+export const TimeZoomPlot = ({ 
+  engine = 'echarts', 
+  chartType = 'line', 
+  rawData, 
+  options = {},
+  lang = 'pl'
+}) => {
   const containerRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const currentLang = lang === 'en' ? 'en' : 'pl';
   const isDemo = !rawData || rawData.length === 0;
-  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  
+  const dataToProcess = isDemo ? DEMO_DATA[currentLang] : rawData;
   const cleanOptions = Object.fromEntries(
     Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const baseOptions = isDemo ? DEMO_OPTIONS[currentLang] : {};
   const activeOptions = { ...baseOptions, ...cleanOptions };
 
-  const timeKey = activeOptions.timeKey || activeOptions.xKey || 'time';
-  const valueKey = activeOptions.valueKey || activeOptions.yKey || 'value';
+  const timeKey = activeOptions.timeKey || activeOptions.xKey || (currentLang === 'en' ? 'time' : 'czas');
+  const valueKey = activeOptions.valueKey || activeOptions.yKey || (currentLang === 'en' ? 'value' : 'wartosc');
+
+  const errorPrefix = currentLang === 'en' ? 'Error' : 'Błąd';
+  const errorNoElement = currentLang === 'en' ? 'Library did not return an HTML element.' : 'Biblioteka nie zwróciła elementu HTML.';
+  const errorUnknown = currentLang === 'en' ? 'Unknown library error' : 'Nieznany błąd biblioteki';
 
   const xData = dataToProcess.map(d => String(d[timeKey] || ''));
   const yData = dataToProcess.map(d => parseFloat(d[valueKey]) || 0);
@@ -62,18 +82,18 @@ export const TimeZoomPlot = ({ engine = 'echarts', chartType = 'line', rawData, 
           containerRef.current.appendChild(plotElement);
           setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
         } else {
-          setErrorMsg('Library did not return an HTML element.');
+          setErrorMsg(errorNoElement);
         }
       } catch (err) {
         console.error("Error in TimeZoomPlot:", err);
-        setErrorMsg(err.message || 'Unknown library error');
+        setErrorMsg(err.message || errorUnknown);
       }
     }
-  }, [chartType, engine, dataToProcess, timeKey, valueKey]);
+  }, [chartType, engine, dataToProcess, timeKey, valueKey, currentLang]);
 
   return (
-    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={dataToProcess} options={chartOptions}>
-      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={dataToProcess} options={chartOptions} lang={currentLang}>
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>{errorPrefix}:</strong> {errorMsg}</div>}
       <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
     </ChartSnippetWrapper>
   );

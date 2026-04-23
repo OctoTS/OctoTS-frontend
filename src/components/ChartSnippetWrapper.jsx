@@ -6,10 +6,14 @@ export const ChartSnippetWrapper = ({
   engine, 
   data, 
   options, 
-  children 
+  children,
+  lang = 'pl'
 }) => {
   const [showCode, setShowCode] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const currentLang = lang === 'en' ? 'en' : 'pl';
+
   const htmlSnippet = `<div id="chart-container" style="height: 500px; width: 100%;"></div>
 
 <script>
@@ -33,6 +37,17 @@ export const ChartSnippetWrapper = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const textCopied = currentLang === 'en' ? 'Copied!' : 'Skopiowano!';
+  const textCopyCode = currentLang === 'en' ? 'Copy code' : 'Kopiuj kod';
+  const textCloseCode = currentLang === 'en' ? 'Close code' : 'Zamknij kod';
+  const textShowCode = currentLang === 'en' ? '</> Show code' : '</> Pokaż kod';
+  const textComment1 = currentLang === 'en' 
+    ? '// The following code is ready to be pasted into an .html file' 
+    : '// Poniższy kod jest gotowy do wklejenia do pliku .html';
+  const textComment2 = currentLang === 'en' 
+    ? '// It contains the exact data and full configuration from the chart above.' 
+    : '// Zawiera dokładne dane i pełną konfigurację z wykresu powyżej.';
+
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
       
@@ -52,7 +67,7 @@ export const ChartSnippetWrapper = ({
                 transition: 'background 0.3s'
               }}
             >
-              {copied ? 'Skopiowano!' : 'Kopiuj kod'}
+              {copied ? textCopied : textCopyCode}
             </button>
           )}
 
@@ -65,7 +80,7 @@ export const ChartSnippetWrapper = ({
               transition: 'background 0.2s'
             }}
           >
-            {showCode ? 'Zamknij kod' : '</> Pokaż kod'}
+            {showCode ? textCloseCode : textShowCode}
           </button>
         </div>
       )}
@@ -83,8 +98,8 @@ export const ChartSnippetWrapper = ({
           textAlign: 'left', fontFamily: 'monospace', boxSizing: 'border-box'
         }}>
           <div style={{ color: '#98c379', marginBottom: '16px' }}>
-            // Poniższy kod jest gotowy do wklejenia do pliku .html<br />
-            // Zawiera dokładne dane i pełną konfigurację z wykresu powyżej.
+            {textComment1}<br />
+            {textComment2}
           </div>
           <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
             {htmlSnippet}

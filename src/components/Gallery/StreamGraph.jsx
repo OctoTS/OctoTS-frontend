@@ -1,35 +1,54 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-const DEMO_DATA = [
-  { t: '2024-01-01', g: 'Alpha', v: 10 }, { t: '2024-01-01', g: 'Beta', v: 20 },
-  { t: '2024-01-02', g: 'Alpha', v: 15 }, { t: '2024-01-02', g: 'Beta', v: 25 },
-  { t: '2024-01-03', g: 'Alpha', v: 30 }, { t: '2024-01-03', g: 'Beta', v: 10 },
-  { t: '2024-01-04', g: 'Alpha', v: 20 }, { t: '2024-01-04', g: 'Beta', v: 40 },
-];
-
-const DEMO_OPTIONS = {
-  timeKey: 't',
-  groupKey: 'g',
-  valueKey: 'v'
+const DEMO_DATA = {
+  pl: [
+    { czas: '2024-01-01', grupa: 'Alfa', wartosc: 10 }, { czas: '2024-01-01', grupa: 'Beta', wartosc: 20 },
+    { czas: '2024-01-02', grupa: 'Alfa', wartosc: 15 }, { czas: '2024-01-02', grupa: 'Beta', wartosc: 25 },
+    { czas: '2024-01-03', grupa: 'Alfa', wartosc: 30 }, { czas: '2024-01-03', grupa: 'Beta', wartosc: 10 },
+    { czas: '2024-01-04', grupa: 'Alfa', wartosc: 20 }, { czas: '2024-01-04', grupa: 'Beta', wartosc: 40 },
+  ],
+  en: [
+    { time: '2024-01-01', group: 'Alpha', value: 10 }, { time: '2024-01-01', group: 'Beta', value: 20 },
+    { time: '2024-01-02', group: 'Alpha', value: 15 }, { time: '2024-01-02', group: 'Beta', value: 25 },
+    { time: '2024-01-03', group: 'Alpha', value: 30 }, { time: '2024-01-03', group: 'Beta', value: 10 },
+    { time: '2024-01-04', group: 'Alpha', value: 20 }, { time: '2024-01-04', group: 'Beta', value: 40 },
+  ]
 };
 
-export const StreamGraph = ({ engine = 'nivo', chartType = 'stream', rawData, options = {} }) => {
+const DEMO_OPTIONS = {
+  pl: { timeKey: 'czas', groupKey: 'grupa', valueKey: 'wartosc' },
+  en: { timeKey: 'time', groupKey: 'group', valueKey: 'value' }
+};
+
+export const StreamGraph = ({ 
+  engine = 'nivo', 
+  chartType = 'stream', 
+  rawData, 
+  options = {},
+  lang = 'pl'
+}) => {
   const containerRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const currentLang = lang === 'en' ? 'en' : 'pl';
   const isDemo = !rawData || rawData.length === 0;
-  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  
+  const dataToProcess = isDemo ? DEMO_DATA[currentLang] : rawData;
   const cleanOptions = Object.fromEntries(
     Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const baseOptions = isDemo ? DEMO_OPTIONS[currentLang] : {};
   const activeOptions = { ...baseOptions, ...cleanOptions };
 
-  const timeKey = activeOptions.timeKey || 'time';
-  const groupKey = activeOptions.groupKey || 'group';
-  const valueKey = activeOptions.valueKey || 'value';
+  const timeKey = activeOptions.timeKey || (currentLang === 'en' ? 'time' : 'czas');
+  const groupKey = activeOptions.groupKey || (currentLang === 'en' ? 'group' : 'grupa');
+  const valueKey = activeOptions.valueKey || (currentLang === 'en' ? 'value' : 'wartosc');
+
+  const errorPrefix = currentLang === 'en' ? 'Error' : 'Błąd';
+  const errorNoElement = currentLang === 'en' ? 'Library did not return an HTML element.' : 'Biblioteka nie zwróciła elementu HTML.';
+  const errorUnknown = currentLang === 'en' ? 'Unknown library error' : 'Nieznany błąd biblioteki';
 
   const timePoints = Array.from(new Set(dataToProcess.map(d => String(d[timeKey] || ''))));
   const groups = Array.from(new Set(dataToProcess.map(d => String(d[groupKey] || ''))));
@@ -75,18 +94,18 @@ export const StreamGraph = ({ engine = 'nivo', chartType = 'stream', rawData, op
           containerRef.current.appendChild(plotElement);
           setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
         } else {
-          setErrorMsg('Library did not return an HTML element.');
+          setErrorMsg(errorNoElement);
         }
       } catch (err) {
         console.error("Error in StreamGraph:", err);
-        setErrorMsg(err.message || 'Unknown library error');
+        setErrorMsg(err.message || errorUnknown);
       }
     }
-  }, [chartType, engine, dataToProcess, timeKey, groupKey, valueKey]);
+  }, [chartType, engine, dataToProcess, timeKey, groupKey, valueKey, currentLang]);
 
   return (
-    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions}>
-      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions} lang={currentLang}>
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>{errorPrefix}:</strong> {errorMsg}</div>}
       <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
     </ChartSnippetWrapper>
   );

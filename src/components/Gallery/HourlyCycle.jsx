@@ -1,36 +1,52 @@
 import React, { useEffect, useRef } from 'react';
 import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-const days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
-const DEMO_DATA = [];
-days.forEach((day, dayIndex) => {
+const daysPL = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+const daysEN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+const DEMO_DATA = { pl: [], en: [] };
+
+daysPL.forEach((day, dayIndex) => {
   for (let hour = 0; hour < 24; hour++) {
-    DEMO_DATA.push({
-      day: day,
-      hour: `${hour}h`,
-      activity: Math.round(((Math.sin(hour / 3) + 1) * 3) + (dayIndex % 2 === 0 ? 2 : 0))
+    const activity = Math.round(((Math.sin(hour / 3) + 1) * 3) + (dayIndex % 2 === 0 ? 2 : 0));
+    
+    DEMO_DATA.pl.push({ 
+      dzien: day, 
+      godzina: `${hour}h`, 
+      aktywnosc: activity 
+    });
+    
+    DEMO_DATA.en.push({ 
+      day: daysEN[dayIndex], 
+      hour: `${hour}h`, 
+      activity: activity 
     });
   }
 });
 
 const DEMO_OPTIONS = {
-  yKey: 'day',
-  xKey: 'hour',
-  valueKey: 'activity'
+  pl: { yKey: 'dzien', xKey: 'godzina', valueKey: 'aktywnosc' },
+  en: { yKey: 'day', xKey: 'hour', valueKey: 'activity' }
 };
 
-export const HourlyCycle = ({ engine = 'echarts', chartType = 'heatmap', rawData, options = {} }) => {
+export const HourlyCycle = ({ 
+  engine = 'echarts', 
+  chartType = 'heatmap', 
+  rawData, 
+  options = {}, 
+  lang = 'pl' 
+}) => {
   const containerRef = useRef(null);
 
+  const currentLang = lang === 'en' ? 'en' : 'pl';
   const isDemo = !rawData || rawData.length === 0;
   
-  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const dataToProcess = isDemo ? DEMO_DATA[currentLang] : rawData;
   const cleanOptions = Object.fromEntries(
     Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const baseOptions = isDemo ? DEMO_OPTIONS : {};
-
+  const baseOptions = isDemo ? DEMO_OPTIONS[currentLang] : {};
   const activeOptions = { ...baseOptions, ...cleanOptions };
 
   const yKey = activeOptions.yKey || 'day';
@@ -38,7 +54,12 @@ export const HourlyCycle = ({ engine = 'echarts', chartType = 'heatmap', rawData
   const valueKey = activeOptions.valueKey || 'value';
 
   const xCategories = Array.from({length: 24}, (_, i) => i + 'h');
-  const yCategories = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'].reverse();
+  
+  const baseDays = currentLang === 'en' 
+    ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] 
+    : ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+    
+  const yCategories = [...baseDays].reverse();
 
   const finalData = dataToProcess.map(d => {
     const xIdx = xCategories.indexOf(String(d[xKey]));
@@ -77,7 +98,7 @@ export const HourlyCycle = ({ engine = 'echarts', chartType = 'heatmap', rawData
       inRange: { color: ['#ebf5fb', '#3498db'] }
     },
     series: [{
-      name: 'Aktywność',
+      name: currentLang === 'en' ? 'Activity' : 'Aktywność',
       type: 'heatmap',
       data: finalData, 
       label: { show: false },
@@ -99,17 +120,18 @@ export const HourlyCycle = ({ engine = 'echarts', chartType = 'heatmap', rawData
         setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
       }
     }
-  }, [chartType, engine, dataToProcess, yKey, xKey, valueKey]);
+  }, [chartType, engine, dataToProcess, yKey, xKey, valueKey, currentLang]);
 
   return (
-      <ChartSnippetWrapper 
-        isDemo={isDemo}
-        chartType={chartType}
-        engine={engine}
-        data={finalData}
-        options={chartOptions}
-      >
-        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
-      </ChartSnippetWrapper>
-    );
+    <ChartSnippetWrapper 
+      isDemo={isDemo}
+      chartType={chartType}
+      engine={engine}
+      data={finalData}
+      options={chartOptions}
+      lang={currentLang}
+    >
+      <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+    </ChartSnippetWrapper>
+  );
 };
