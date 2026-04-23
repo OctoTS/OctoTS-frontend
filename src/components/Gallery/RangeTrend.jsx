@@ -50,38 +50,48 @@ export const RangeTrend = ({
   const fallbackNa = currentLang === 'en' ? 'N/A' : 'Brak';
   const seriesName = currentLang === 'en' ? 'Value' : 'Wartość';
   const errorPrefix = currentLang === 'en' ? 'Error' : 'Błąd';
+  const errorNoElement = currentLang === 'en' ? 'Library did not return an HTML element.' : 'Biblioteka nie zwróciła elementu HTML.';
+
+  const finalData = [{
+    name: seriesName,
+    data: dataToProcess.map(d => ({
+      x: d[xKey] ? String(d[xKey]).trim() : fallbackNa,
+      y: isNaN(parseFloat(d[yKey])) ? 0 : parseFloat(d[yKey])
+    }))
+  }];
+
+  const chartOptions = { ...activeOptions, series: finalData };
 
   useEffect(() => {
     if (window.makeplot && containerRef.current) {
       containerRef.current.innerHTML = '';
       setErrorMsg(null);
       try {
-        const finalData = [{
-          name: seriesName,
-          data: dataToProcess.map(d => ({
-            x: d[xKey] ? String(d[xKey]).trim() : fallbackNa,
-            y: isNaN(parseFloat(d[yKey])) ? 0 : parseFloat(d[yKey])
-          }))
-        }];
-
-        const plot = window.makeplot(chartType, finalData, { ...activeOptions, series: finalData }, engine);
-        if (plot) containerRef.current.appendChild(plot);
+        const plot = window.makeplot(chartType, finalData, chartOptions, engine);
+        
+        if (plot) {
+          containerRef.current.appendChild(plot);
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        } else {
+          setErrorMsg(errorNoElement);
+        }
       } catch (err) {
+        console.error("Error in RangeTrend:", err);
         setErrorMsg(err.message);
       }
     }
-  }, [chartType, engine, dataToProcess, xKey, yKey, activeOptions, seriesName, fallbackNa]);
+  }, [chartType, engine, dataToProcess, xKey, yKey, currentLang]);
 
   return (
     <ChartSnippetWrapper 
       isDemo={isDemo} 
       chartType={chartType} 
       engine={engine} 
-      data={dataToProcess} 
-      options={activeOptions}
+      data={finalData}     
+      options={chartOptions} 
       lang={currentLang}
     >
-      {errorMsg && <div style={{ color: 'red', textAlign: 'center' }}>{errorPrefix}: {errorMsg}</div>}
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>{errorPrefix}:</strong> {errorMsg}</div>}
       <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
     </ChartSnippetWrapper>
   );

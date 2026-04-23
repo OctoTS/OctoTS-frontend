@@ -32,67 +32,85 @@ export const VolatilityCandle = ({
   const [errorMsg, setErrorMsg] = useState(null);
 
   const currentLang = lang === 'en' ? 'en' : 'pl';
-  const hasData = Array.isArray(rawData) && rawData.length > 0;
-  const isDemo = !hasData;
+  const isDemo = !rawData || rawData.length === 0;
   const dataToProcess = isDemo ? DEMO_DATA[currentLang] : rawData;
 
-  const timeKey = options.xKey || options.timeKey || (isDemo ? DEMO_OPTIONS[currentLang].timeKey : '');
-  const valueKey = options.valueKey || options.yKey || (isDemo ? DEMO_OPTIONS[currentLang].valueKey : '');
+  // Usuwamy puste stringi i nieważne wartości z wejściowego obiektu options
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
+
+  const baseOptions = isDemo ? DEMO_OPTIONS[currentLang] : {};
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const timeKey = activeOptions.timeKey || activeOptions.xKey || (currentLang === 'en' ? 'time' : 'czas');
+  const valueKey = activeOptions.valueKey || activeOptions.yKey || (currentLang === 'en' ? 'value' : 'wartosc');
 
   const fallbackUnknown = currentLang === 'en' ? 'Unknown' : 'Nieznany';
   const seriesName = currentLang === 'en' ? 'Volatility' : 'Zmienność';
   const errorPrefix = currentLang === 'en' ? 'Error' : 'Błąd';
+  const errorNoElement = currentLang === 'en' ? 'Library did not return an HTML element.' : 'Biblioteka nie zwróciła elementu HTML.';
+  const errorUnknown = currentLang === 'en' ? 'Unknown library error' : 'Nieznany błąd biblioteki';
+
+  const grouped = {};
+  dataToProcess.forEach(d => {
+    const t = d[timeKey] ? String(d[timeKey]).trim() : fallbackUnknown;
+    const v = parseFloat(d[valueKey]);
+    if (!isNaN(v)) {
+      if (!grouped[t]) grouped[t] = [];
+      grouped[t].push(v);
+    }
+  });
+
+  const categories = Object.keys(grouped);
+  const seriesData = categories.map(t => {
+    const vals = grouped[t];
+    return [vals[0], vals[vals.length - 1], Math.min(...vals), Math.max(...vals)];
+  });
+
+  const chartOptions = {
+    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+    xAxis: { type: 'category', data: categories },
+    yAxis: { scale: true },
+    series: [{
+      name: seriesName,
+      type: 'candlestick',
+      data: seriesData,
+      itemStyle: { color: '#ef5350', color0: '#26a69a', borderColor: '#ef5350', borderColor0: '#26a69a' }
+    }],
+    ...activeOptions
+  };
 
   useEffect(() => {
-    if (window.makeplot && containerRef.current) {
-      if (!isDemo && (!timeKey || !valueKey)) return;
-
+    if (window.makeplot && containerRef.current && categories.length > 0) {
       containerRef.current.innerHTML = '';
       setErrorMsg(null);
 
       try {
-        const grouped = {};
-        dataToProcess.forEach(d => {
-          const t = d[timeKey] ? String(d[timeKey]).trim() : fallbackUnknown;
-          const v = parseFloat(d[valueKey]);
-          if (!isNaN(v)) {
-            if (!grouped[t]) grouped[t] = [];
-            grouped[t].push(v);
-          }
-        });
-
-        const categories = Object.keys(grouped);
-        const seriesData = categories.map(t => {
-          const vals = grouped[t];
-          return [vals[0], vals[vals.length - 1], Math.min(...vals), Math.max(...vals)];
-        });
-
-        const chartOptions = {
-          tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-          xAxis: { type: 'category', data: categories },
-          yAxis: { scale: true },
-          series: [{
-            name: seriesName,
-            type: 'candlestick',
-            data: seriesData,
-            itemStyle: { color: '#ef5350', color0: '#26a69a', borderColor: '#ef5350', borderColor0: '#26a69a' }
-          }]
-        };
-
-        const plot = window.makeplot(chartType, dataToProcess, chartOptions, engine);
-        if (plot) {
-          containerRef.current.appendChild(plot);
+        const plotElement = window.makeplot(chartType, dataToProcess, chartOptions, engine);
+        
+        if (plotElement) {
+          containerRef.current.appendChild(plotElement);
           setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        } else {
+          setErrorMsg(errorNoElement);
         }
       } catch (err) {
-        console.error(err);
-        setErrorMsg(err.message);
+        console.error("Error in VolatilityCandle:", err);
+        setErrorMsg(err.message || errorUnknown);
       }
     }
-  }, [rawData, timeKey, valueKey, chartType, engine, currentLang, fallbackUnknown, seriesName]);
+  }, [chartType, engine, dataToProcess, timeKey, valueKey, currentLang]);
 
   return (
-    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={dataToProcess} options={options} lang={currentLang}>
+    <ChartSnippetWrapper 
+      isDemo={isDemo} 
+      chartType={chartType} 
+      engine={engine} 
+      data={dataToProcess} 
+      options={chartOptions} 
+      lang={currentLang}
+    >
       {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>{errorPrefix}:</strong> {errorMsg}</div>}
       <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
     </ChartSnippetWrapper>
