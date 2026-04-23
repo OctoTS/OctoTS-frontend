@@ -1,0 +1,26 @@
+name: Pre-build Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-build:
+    name: Sprawdzenie poprawności budowania
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pobranie kodu repozytorium (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja środowiska Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.1'
+
+      - name: Instalacja zależności
+        run: npm ci 
+
+      - name: Próbny build aplikacji
+        run: npm run build
