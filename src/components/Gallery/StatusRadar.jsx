@@ -1,37 +1,54 @@
 import React, { useEffect, useRef } from 'react';
 import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-const DEMO_DATA = [
-  { category: 'Development', score: 80 },
-  { category: 'Testing', score: 65 },
-  { category: 'Design', score: 90 },
-  { category: 'DevOps', score: 75 },
-  { category: 'Management', score: 85 },
-];
-
-const DEMO_OPTIONS = {
-  categoryKey: 'category',
-  valueKey: 'score'
+const DEMO_DATA = {
+  pl: [
+    { kategoria: 'Programowanie', wynik: 80 },
+    { kategoria: 'Testowanie', wynik: 65 },
+    { kategoria: 'Projektowanie', wynik: 90 },
+    { kategoria: 'DevOps', wynik: 75 },
+    { kategoria: 'Zarządzanie', wynik: 85 },
+  ],
+  en: [
+    { category: 'Development', score: 80 },
+    { category: 'Testing', score: 65 },
+    { category: 'Design', score: 90 },
+    { category: 'DevOps', score: 75 },
+    { category: 'Management', score: 85 },
+  ]
 };
 
-export const StatusRadar = ({ engine = 'chartjs', chartType = 'radar', rawData, options = {} }) => {
+const DEMO_OPTIONS = {
+  pl: { categoryKey: 'kategoria', valueKey: 'wynik' },
+  en: { categoryKey: 'category', valueKey: 'score' }
+};
+
+export const StatusRadar = ({ 
+  engine = 'chartjs', 
+  chartType = 'radar', 
+  rawData, 
+  options = {},
+  lang = 'pl'
+}) => {
   const containerRef = useRef(null);
 
+  const currentLang = lang === 'en' ? 'en' : 'pl';
   const isDemo = !rawData || rawData.length === 0;
 
-  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const dataToProcess = isDemo ? DEMO_DATA[currentLang] : rawData;
   const cleanOptions = Object.fromEntries(
     Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const baseOptions = isDemo ? DEMO_OPTIONS[currentLang] : {};
   const activeOptions = { ...baseOptions, ...cleanOptions };
 
   const categoryKey = activeOptions.categoryKey || activeOptions.groupKey || 'category';
   const valueKey = activeOptions.valueKey || 'value';
 
-  // Chart.js dla Radaru oczekuje { labels: [...], datasets: [...] }
-  const labels = dataToProcess.map(d => d[categoryKey] ? String(d[categoryKey]).trim() : 'Brak');
+  const fallbackText = currentLang === 'en' ? 'Unknown' : 'Brak';
+
+  const labels = dataToProcess.map(d => d[categoryKey] ? String(d[categoryKey]).trim() : fallbackText);
   const dataValues = dataToProcess.map(d => {
     const parsedY = parseFloat(d[valueKey]);
     return isNaN(parsedY) ? 0 : parsedY;
@@ -83,7 +100,7 @@ export const StatusRadar = ({ engine = 'chartjs', chartType = 'radar', rawData, 
         setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
       }
     }
-  }, [chartType, engine, dataToProcess, categoryKey, valueKey]);
+  }, [chartType, engine, dataToProcess, categoryKey, valueKey, currentLang]);
 
   return (
     <ChartSnippetWrapper
@@ -92,6 +109,7 @@ export const StatusRadar = ({ engine = 'chartjs', chartType = 'radar', rawData, 
       engine={engine}
       data={finalData}
       options={chartOptions}
+      lang={currentLang}
     >
       <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
     </ChartSnippetWrapper>

@@ -1,38 +1,61 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-const DEMO_DATA = [
-  { t: '10:00', v: 1 },
-  { t: '11:00', v: 3 },
-  { t: '12:00', v: 3 },
-  { t: '13:00', v: 5 },
-  { t: '14:00', v: 2 },
-  { t: '15:00', v: 6 },
-];
-
-const DEMO_OPTIONS = {
-  timeKey: 't',
-  valueKey: 'v'
+const DEMO_DATA = {
+  pl: [
+    { czas: '10:00', wartosc: 1 },
+    { czas: '11:00', wartosc: 3 },
+    { czas: '12:00', wartosc: 3 },
+    { czas: '13:00', wartosc: 5 },
+    { czas: '14:00', wartosc: 2 },
+    { czas: '15:00', wartosc: 6 },
+  ],
+  en: [
+    { time: '10:00', value: 1 },
+    { time: '11:00', value: 3 },
+    { time: '12:00', value: 3 },
+    { time: '13:00', value: 5 },
+    { time: '14:00', value: 2 },
+    { time: '15:00', value: 6 },
+  ]
 };
 
-export const StepEvolution = ({ engine = 'chartjs', chartType = 'line', rawData, options = {} }) => {
+const DEMO_OPTIONS = {
+  pl: { timeKey: 'czas', valueKey: 'wartosc' },
+  en: { timeKey: 'time', valueKey: 'value' }
+};
+
+export const StepEvolution = ({ 
+  engine = 'chartjs', 
+  chartType = 'line', 
+  rawData, 
+  options = {},
+  lang = 'pl'
+}) => {
   const containerRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const currentLang = lang === 'en' ? 'en' : 'pl';
   const isDemo = !rawData || rawData.length === 0;
 
-  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const dataToProcess = isDemo ? DEMO_DATA[currentLang] : rawData;
   const cleanOptions = Object.fromEntries(
     Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const baseOptions = isDemo ? DEMO_OPTIONS[currentLang] : {};
   const activeOptions = { ...baseOptions, ...cleanOptions };
 
   const timeKey = activeOptions.timeKey || activeOptions.xKey || 'time';
   const valueKey = activeOptions.valueKey || activeOptions.yKey || 'value';
 
-  const labels = dataToProcess.map(d => d[timeKey] ? String(d[timeKey]).trim() : 'Unknown');
+  const fallbackText = currentLang === 'en' ? 'Unknown' : 'Nieznany';
+  const datasetLabel = currentLang === 'en' ? 'Step Evolution' : 'Ewolucja krokowa';
+  const errorPrefix = currentLang === 'en' ? 'Error' : 'Błąd';
+  const errorNoElement = currentLang === 'en' ? 'Library did not return an HTML element.' : 'Biblioteka nie zwróciła elementu HTML.';
+  const errorUnknown = currentLang === 'en' ? 'Unknown library error' : 'Nieznany błąd biblioteki';
+
+  const labels = dataToProcess.map(d => d[timeKey] ? String(d[timeKey]).trim() : fallbackText);
   const dataValues = dataToProcess.map(d => {
     const parsedY = parseFloat(d[valueKey]);
     return isNaN(parsedY) ? 0 : parsedY;
@@ -42,7 +65,7 @@ export const StepEvolution = ({ engine = 'chartjs', chartType = 'line', rawData,
     labels: labels,
     datasets: [
       {
-        label: 'Step Evolution',
+        label: datasetLabel,
         data: dataValues,
         borderColor: '#a855f7',
         backgroundColor: 'rgba(168, 85, 247, 0.1)',
@@ -73,18 +96,18 @@ export const StepEvolution = ({ engine = 'chartjs', chartType = 'line', rawData,
           containerRef.current.appendChild(plotElement);
           setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
         } else {
-          setErrorMsg('Library did not return an HTML element.');
+          setErrorMsg(errorNoElement);
         }
       } catch (err) {
         console.error("Error in StepEvolution:", err);
-        setErrorMsg(err.message || 'Unknown library error');
+        setErrorMsg(err.message || errorUnknown);
       }
     }
-  }, [chartType, engine, dataToProcess, timeKey, valueKey]);
+  }, [chartType, engine, dataToProcess, timeKey, valueKey, currentLang]);
 
   return (
-    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions}>
-      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
+    <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions} lang={currentLang}>
+      {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>{errorPrefix}:</strong> {errorMsg}</div>}
       <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
     </ChartSnippetWrapper>
   );
