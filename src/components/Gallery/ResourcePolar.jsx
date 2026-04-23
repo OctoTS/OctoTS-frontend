@@ -31,24 +31,42 @@ export const ResourcePolar = ({ engine = 'chartjs', chartType = 'doughnut', rawD
   const categoryKey = activeOptions.categoryKey || activeOptions.groupKey || 'category';
   const valueKey = activeOptions.valueKey || activeOptions.yKey || 'value';
 
-  const labels = dataToProcess.map(d => d[categoryKey] ? String(d[categoryKey]).trim() : 'Unknown');
-  const dataValues = dataToProcess.map(d => {
-    const parsedY = parseFloat(d[valueKey]);
-    return isNaN(parsedY) ? 0 : parsedY;
+  const groupedData = dataToProcess.reduce((acc, currentItem) => {
+    const category = currentItem[categoryKey] ? String(currentItem[categoryKey]).trim() : 'Unknown';
+    let value = parseFloat(currentItem[valueKey]);
+    
+    if (isNaN(value)) value = 0;
+
+    if (!acc[category]) {
+      acc[category] = { sum: 0, count: 0 };
+    }
+    
+    acc[category].sum += value;
+    acc[category].count += 1;
+    
+    return acc;
+  }, {});
+
+  const labels = Object.keys(groupedData);
+  const dataValues = labels.map(label => {
+    const group = groupedData[label];
+    return Number((group.sum / group.count).toFixed(2)); 
   });
 
   const finalData = {
     labels: labels,
     datasets: [
       {
-        label: 'Size',
+        label: 'Wartość',
         data: dataValues,
         backgroundColor: [
           'rgba(255, 99, 132, 0.6)',
           'rgba(54, 162, 235, 0.6)',
           'rgba(255, 206, 86, 0.6)',
           'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)'
+          'rgba(153, 102, 255, 0.6)',
+          'rgba(255, 159, 64, 0.6)',
+          'rgba(199, 199, 199, 0.6)'
         ]
       }
     ]
@@ -59,6 +77,11 @@ export const ResourcePolar = ({ engine = 'chartjs', chartType = 'doughnut', rawD
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      }
+    },
     ...safeOptions
   };
 
@@ -86,7 +109,7 @@ export const ResourcePolar = ({ engine = 'chartjs', chartType = 'doughnut', rawD
   return (
     <ChartSnippetWrapper isDemo={isDemo} chartType={chartType} engine={engine} data={finalData} options={chartOptions}>
       {errorMsg && <div style={{ color: '#ff4444', padding: '1rem', textAlign: 'center' }}><strong>Error:</strong> {errorMsg}</div>}
-      <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
+      <div ref={containerRef} style={{ height: '100%', width: '100%'}} />
     </ChartSnippetWrapper>
   );
 };
