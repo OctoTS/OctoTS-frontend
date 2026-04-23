@@ -1,71 +1,115 @@
-import React from 'react';
-import ReactECharts from 'echarts-for-react';
+import React, { useEffect, useRef } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-export const HourlyCycle = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey || !config.timeKey) return null;
+const days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+const DEMO_DATA = [];
+days.forEach((day, dayIndex) => {
+  for (let hour = 0; hour < 24; hour++) {
+    DEMO_DATA.push({
+      day: day,
+      hour: `${hour}h`,
+      activity: Math.round(((Math.sin(hour / 3) + 1) * 3) + (dayIndex % 2 === 0 ? 2 : 0))
+    });
+  }
+});
 
-  const { valueKey, timeKey } = config;
-  const dayLabels = lang === 'pl'
-    ? ['Nd', 'So', 'Pt', 'Cz', 'Śr', 'Wt', 'Pn']
-    : ['Sun', 'Sat', 'Fri', 'Thu', 'Wed', 'Tue', 'Mon'];
+const DEMO_OPTIONS = {
+  yKey: 'day',
+  xKey: 'hour',
+  valueKey: 'activity'
+};
 
-  const dayMapping = { 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 0: 0 };
-  const activityMatrix = {};
-  let maxActivityValue = 0;
+export const HourlyCycle = ({ engine = 'echarts', chartType = 'heatmap', rawData, options = {} }) => {
+  const containerRef = useRef(null);
 
-  data.forEach(item => {
-    const date = new Date(item[timeKey]);
-    if (isNaN(date.getTime())) return;
+  const isDemo = !rawData || rawData.length === 0;
+  
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
 
-    const hour = date.getHours();
-    const day = date.getDay();
-    const yIndex = dayMapping[day];
-    const value = parseFloat(item[valueKey]) || 0;
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
 
-    const key = `${hour}-${yIndex}`;
-    activityMatrix[key] = (activityMatrix[key] || 0) + value;
-    if (activityMatrix[key] > maxActivityValue) maxActivityValue = activityMatrix[key];
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const yKey = activeOptions.yKey || 'day';
+  const xKey = activeOptions.xKey || 'hour';
+  const valueKey = activeOptions.valueKey || 'value';
+
+  const xCategories = Array.from({length: 24}, (_, i) => i + 'h');
+  const yCategories = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'].reverse();
+
+  const finalData = dataToProcess.map(d => {
+    const xIdx = xCategories.indexOf(String(d[xKey]));
+    const yIdx = yCategories.indexOf(String(d[yKey]));
+    const val = parseFloat(d[valueKey]);
+
+    return [
+      xIdx !== -1 ? xIdx : 0, 
+      yIdx !== -1 ? yIdx : 0, 
+      isNaN(val) ? 0 : val
+    ];
   });
 
-  const heatmapData = [];
-  for (let hour = 0; hour < 24; hour++) {
-    for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
-      heatmapData.push([hour, dayIdx, activityMatrix[`${hour}-${dayIdx}`] || 0]);
-    }
-  }
+  const { yKey: _, xKey: __, valueKey: ___, ...safeOptions } = activeOptions;
 
-  const option = {
+  const chartOptions = {
     tooltip: { position: 'top' },
     grid: { height: '65%', top: '5%', bottom: '25%', containLabel: true },
     xAxis: { 
       type: 'category', 
-      data: Array.from({ length: 24 }, (_, i) => i + 'h'),
+      data: xCategories, 
       splitArea: { show: true }
     },
     yAxis: { 
       type: 'category', 
-      data: dayLabels,
+      data: yCategories, 
       splitArea: { show: true }
     },
     visualMap: {
       min: 0,
-      max: maxActivityValue || 10,
+      max: 10,
       calculable: true,
       orient: 'horizontal',
       left: 'center',
       bottom: '5%', 
-      inRange: { color: ['#ebf5fb', '#646cff'] }
+      inRange: { color: ['#ebf5fb', '#3498db'] }
     },
     series: [{
-      name: lang === 'pl' ? 'Aktywność' : 'Activity',
+      name: 'Aktywność',
       type: 'heatmap',
-      data: heatmapData,
+      data: finalData, 
       label: { show: false },
       emphasis: {
         itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0, 0, 0, 0.5)' }
       }
-    }]
+    }],
+    ...safeOptions
   };
 
-  return <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />;
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.length > 0) {
+      containerRef.current.innerHTML = '';
+      
+      const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+      
+      if (plotElement) {
+        containerRef.current.appendChild(plotElement);
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+      }
+    }
+  }, [chartType, engine, dataToProcess, yKey, xKey, valueKey]);
+
+  return (
+      <ChartSnippetWrapper 
+        isDemo={isDemo}
+        chartType={chartType}
+        engine={engine}
+        data={finalData}
+        options={chartOptions}
+      >
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </ChartSnippetWrapper>
+    );
 };

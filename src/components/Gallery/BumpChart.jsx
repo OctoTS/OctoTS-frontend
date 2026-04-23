@@ -1,63 +1,140 @@
-import React from 'react';
-import { ResponsiveBump } from '@nivo/bump';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-export const BumpChart = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey || !config.groupKey || !config.timeKey) return null;
+const DEMO_DATA = [
+  { author: 'Anna', timestamp: '2023-01-01', rank: 1 },
+  { author: 'Anna', timestamp: '2023-02-01', rank: 2 },
+  { author: 'Anna', timestamp: '2023-03-01', rank: 1 },
+  { author: 'Anna', timestamp: '2023-04-01', rank: 3 },
+  { author: 'Jan', timestamp: '2023-01-01', rank: 2 },
+  { author: 'Jan', timestamp: '2023-02-01', rank: 1 },
+  { author: 'Jan', timestamp: '2023-03-01', rank: 3 },
+  { author: 'Jan', timestamp: '2023-04-01', rank: 2 },
+  { author: 'Marek', timestamp: '2023-01-01', rank: 3 },
+  { author: 'Marek', timestamp: '2023-02-01', rank: 3 },
+  { author: 'Marek', timestamp: '2023-03-01', rank: 2 },
+  { author: 'Marek', timestamp: '2023-04-01', rank: 1 },
+];
 
-  const { valueKey, groupKey, timeKey } = config;
+const DEMO_OPTIONS = {
+  groupBy: 'author',
+  timeKey: 'timestamp',
+  valueKey: 'rank'
+};
+
+export const BumpChart = ({ engine = 'nivo', chartType = 'bump', rawData, options = {}, lang = 'pl' }) => {
+  const containerRef = useRef(null);
+
+  const isDemo = !rawData || rawData.length === 0;
+  
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
+
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const groupBy = activeOptions.groupBy || 'author'; 
+  const timeKey = activeOptions.timeKey || 'timestamp';
+  const valueKey = activeOptions.valueKey || 'value';
+
   const translations = {
-    pl: { label: 'Wartość' },
-    en: { label: 'Value' }
+    pl: { ranking: 'Ranking' },
+    en: { ranking: 'Ranking' }
   };
   const t = translations[lang] || translations.pl;
 
-  const validData = data.filter(item => 
-    item && item[timeKey] && item[groupKey] && item[valueKey] !== undefined
-  );
+  let finalData = [];
+  let chartWidth = '100%';
+  let xRotation = 0;
 
-  if (validData.length === 0) return null;
+  if (dataToProcess && dataToProcess.length > 0) {
+    const timePoints = Array.from(new Set(dataToProcess.map(d => d[timeKey] ? String(d[timeKey]).split('T')[0] : 'Brak daty')));
+    
+    chartWidth = Math.max(timePoints.length * 80, 500) + 'px';
+    xRotation = timePoints.length > 10 ? -45 : 0;
 
-  const uniqueGroups = Array.from(new Set(validData.map(d => d[groupKey])));
-  const chartData = uniqueGroups.map(group => ({
-    id: group,
-    data: validData.filter(d => d[groupKey] === group)
-              .sort((a, b) => new Date(a[timeKey]) - new Date(b[timeKey]))
-              .map(d => ({ 
-                x: d[timeKey].toString().includes('T') ? d[timeKey].split('T')[0] : d[timeKey], 
-                y: parseFloat(d[valueKey]) || 0 
-              }))
-  }));
+    const groups = Array.from(new Set(dataToProcess.map(d => d[groupBy] ? String(d[groupBy]).trim() : 'Nieznana')));
 
-  const timePointsCount = chartData[0]?.data.length || 0;
-  const dynamicWidth = Math.max(timePointsCount * 80, 500);
+    finalData = groups.map(group => {
+      const groupEntries = dataToProcess
+        .filter(d => (d[groupBy] ? String(d[groupBy]).trim() : 'Nieznana') === group)
+        .sort((a, b) => new Date(a[timeKey] || 0) - new Date(b[timeKey] || 0));
+
+      return {
+        id: group,
+        data: groupEntries.map((d) => {
+          let parsedY = parseFloat(d[valueKey]);
+          return {
+            x: d[timeKey] ? String(d[timeKey]).split('T')[0] : 'Brak daty',
+            y: isNaN(parsedY) ? 0 : parsedY
+          };
+        })
+      };
+    });
+  }
+
+  const { groupBy: _, timeKey: __, valueKey: ___, ...safeOptions } = activeOptions;
+
+  const chartOptions = {
+    margin: { top: 40, right: 100, bottom: 80, left: 80 },
+    colors: { scheme: 'set2' },
+    lineWidth: 3,
+    activeLineWidth: 6,
+    inactiveLineWidth: 3,
+    inactiveOpacity: 0.15,
+    pointSize: 10,
+    activePointSize: 16,
+    inactivePointSize: 0,
+    pointBorderWidth: 3,
+    activePointBorderWidth: 3,
+    useMesh: true,
+    axisBottom: {
+      tickSize: 5,
+      tickPadding: 5,
+      tickRotation: xRotation,
+      legend: timeKey.toUpperCase(), 
+      legendPosition: 'middle',
+      legendOffset: 40
+    },
+    axisLeft: {
+      tickSize: 5,
+      tickPadding: 10,
+      tickRotation: 0,
+      legend: valueKey.toUpperCase(), 
+      legendPosition: 'middle',
+      legendOffset: -60
+    },
+    groupBy: groupBy, 
+    timeKey: timeKey,    
+    valueKey: valueKey,
+    ...safeOptions
+  };
+
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.length > 0) {
+      containerRef.current.innerHTML = '';
+      
+      const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+      
+      if (plotElement) {
+        containerRef.current.appendChild(plotElement);
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+      }
+    }
+  }, [chartType, engine, dataToProcess, groupBy, timeKey, valueKey]);
 
   return (
-    <div style={{ height: '100%', width: dynamicWidth + 'px' }}>
-      <ResponsiveBump
-        data={chartData}
-        margin={{ top: 20, right: 100, bottom: 80, left: 80 }}
-        lineWidth={3}
-        activeLineWidth={6}
-        pointSize={10}
-        activePointSize={16}
-        colors={{ scheme: 'nivo' }}
-        useMesh={true}
-        enableGridX={false}
-        axisBottom={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: -45
-        }}
-        axisLeft={{
-          tickSize: 5,
-          tickPadding: 10,
-          tickRotation: 0,
-          legend: t.label,
-          legendPosition: 'middle',
-          legendOffset: -60,
-          tickValues: 8
-        }}
-      />
-    </div>
-  );
+      <ChartSnippetWrapper 
+        isDemo={isDemo}
+        chartType={chartType}
+        engine={engine}
+        data={finalData}
+        options={chartOptions}
+      >
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </ChartSnippetWrapper>
+    );
 };

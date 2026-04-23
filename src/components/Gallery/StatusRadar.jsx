@@ -1,51 +1,99 @@
-import React from 'react';
-import { Radar } from 'react-chartjs-2';
-import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useRef } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+const DEMO_DATA = [
+  { category: 'Development', score: 80 },
+  { category: 'Testing', score: 65 },
+  { category: 'Design', score: 90 },
+  { category: 'DevOps', score: 75 },
+  { category: 'Management', score: 85 },
+];
 
-export const StatusRadar = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey || !config.groupKey) return null;
-  const { valueKey, groupKey } = config;
+const DEMO_OPTIONS = {
+  categoryKey: 'category',
+  valueKey: 'score'
+};
 
-  const translations = {
-    pl: { label: 'Wkład' },
-    en: { label: 'Contribution' }
-  };
-  const t = translations[lang] || translations.en;
+export const StatusRadar = ({ engine = 'chartjs', chartType = 'radar', rawData, options = {} }) => {
+  const containerRef = useRef(null);
 
-  const groups = Array.from(new Set(data.map(item => item[groupKey])));
-  const values = groups.map(g => 
-    data.filter(d => d[groupKey] === g)
-        .reduce((sum, curr) => sum + (parseFloat(curr[valueKey]) || 0), 0)
+  const isDemo = !rawData || rawData.length === 0;
+
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  const chartData = {
-    labels: groups,
-    datasets: [{
-      label: t.label,
-      data: values,
-      backgroundColor: 'rgba(100, 108, 255, 0.2)',
-      borderColor: '#646cff',
-      pointBackgroundColor: '#646cff',
-    }]
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const categoryKey = activeOptions.categoryKey || activeOptions.groupKey || 'category';
+  const valueKey = activeOptions.valueKey || 'value';
+
+  // Chart.js dla Radaru oczekuje { labels: [...], datasets: [...] }
+  const labels = dataToProcess.map(d => d[categoryKey] ? String(d[categoryKey]).trim() : 'Brak');
+  const dataValues = dataToProcess.map(d => {
+    const parsedY = parseFloat(d[valueKey]);
+    return isNaN(parsedY) ? 0 : parsedY;
+  });
+
+  const finalData = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Status',
+        data: dataValues,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: '#3498db',
+        pointBackgroundColor: '#3498db',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#3498db'
+      }
+    ]
   };
 
-  const options = {
+  const { categoryKey: _, valueKey: __, ...safeOptions } = activeOptions;
+
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       r: {
-        angleLines: { color: '#333' },
-        grid: { color: '#333' },
+        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
         pointLabels: { color: '#888' },
         ticks: { display: false }
       }
     },
     plugins: {
       legend: { display: false }
-    }
+    },
+    ...safeOptions
   };
 
-  return <Radar data={chartData} options={options} />;
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.labels.length > 0) {
+      containerRef.current.innerHTML = '';
+
+      const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+
+      if (plotElement) {
+        containerRef.current.appendChild(plotElement);
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+      }
+    }
+  }, [chartType, engine, dataToProcess, categoryKey, valueKey]);
+
+  return (
+    <ChartSnippetWrapper
+      isDemo={isDemo}
+      chartType={chartType}
+      engine={engine}
+      data={finalData}
+      options={chartOptions}
+    >
+      <div ref={containerRef} style={{ height: '100%', width: '100%', minHeight: '300px' }} />
+    </ChartSnippetWrapper>
+  );
 };

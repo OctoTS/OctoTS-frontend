@@ -1,57 +1,109 @@
-import React from 'react';
-import { Scatter } from 'react-chartjs-2';
-import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useRef } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
+const DEMO_DATA = [
+  { developer: 'Zespół A', linesChanged: 120, reviewHours: 2.5 },
+  { developer: 'Zespół A', linesChanged: 300, reviewHours: 5.0 },
+  { developer: 'Zespół A', linesChanged: 50,  reviewHours: 1.0 },
+  { developer: 'Zespół A', linesChanged: 450, reviewHours: 8.5 },
+  { developer: 'Zespół B', linesChanged: 200, reviewHours: 3.0 },
+  { developer: 'Zespół B', linesChanged: 150, reviewHours: 4.0 },
+  { developer: 'Zespół B', linesChanged: 600, reviewHours: 10.0 },
+  { developer: 'Zespół C', linesChanged: 80,  reviewHours: 1.5 },
+  { developer: 'Zespół C', linesChanged: 350, reviewHours: 6.0 },
+  { developer: 'Zespół C', linesChanged: 250, reviewHours: 3.5 },
+];
 
-export const EfficiencyScatter = ({ data, config }) => {
-  if (!data || !config || !config.valueKey) return null;
+const DEMO_OPTIONS = {
+  groupBy: 'developer',
+  xKey: 'linesChanged',
+  yKey: 'reviewHours'
+};
 
-  const { valueKey, labelY } = config;
+export const EfficiencyScatter = ({ engine = 'chartjs', chartType = 'scatter', rawData, options = {} }) => {
+  const containerRef = useRef(null);
 
-  const validData = data.filter(item => 
-    item && item[valueKey] !== undefined && !isNaN(parseFloat(item[valueKey]))
+  const isDemo = !rawData || rawData.length === 0;
+  
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
   );
 
-  if (validData.length === 0) return null;
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
 
-  const chartData = {
-    datasets: [{
-      label: labelY || valueKey,
-      data: validData.map((item, index) => ({ 
-        x: index, 
-        y: parseFloat(item[valueKey]) 
-      })),
-      backgroundColor: '#646cff',
-      pointRadius: 6,
-      pointHoverRadius: 8
-    }]
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const groupBy = activeOptions.groupBy || 'group'; 
+  const xKey = activeOptions.xKey || 'x';
+  const yKey = activeOptions.yKey || 'y';
+
+  const groups = Array.from(new Set(dataToProcess.map(d => d[groupBy] ? String(d[groupBy]).trim() : 'Nieznana')));
+
+  const finalData = {
+    datasets: groups.map(group => {
+      const groupEntries = dataToProcess.filter(d => (d[groupBy] ? String(d[groupBy]).trim() : 'Nieznana') === group);
+      
+      return {
+        label: group, 
+        data: groupEntries.map((d) => {
+          let parsedX = parseFloat(d[xKey]);
+          let parsedY = parseFloat(d[yKey]);
+          return {
+            x: isNaN(parsedX) ? 0 : parsedX,
+            y: isNaN(parsedY) ? 0 : parsedY
+          };
+        }),
+        pointRadius: 6,
+        pointHoverRadius: 9
+      };
+    })
   };
 
-  const options = {
+  const { groupBy: _, xKey: __, yKey: ___, ...safeOptions } = activeOptions;
+
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true },
+      tooltip: { enabled: true }
+    },
     scales: {
       x: { 
-        grid: { color: '#333' },
-        ticks: { display: false },
-        title: { display: true, text: 'Index', color: '#888' }
+        title: { display: true, text: xKey.toUpperCase(), color: '#888' }, 
+        grid: { color: '#e0e0e0' } 
       },
       y: { 
-        grid: { color: '#333' },
-        ticks: { color: '#888' },
-        beginAtZero: true,
-        title: { display: true, text: labelY || '', color: '#888' }
+        title: { display: true, text: yKey.toUpperCase(), color: '#888' }, 
+        grid: { color: '#e0e0e0' } 
       }
     },
-    plugins: {
-      legend: { display: !!labelY }
-    }
+    ...safeOptions
   };
 
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.datasets.length > 0) {
+      containerRef.current.innerHTML = '';
+      
+      const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+      
+      if (plotElement) {
+        containerRef.current.appendChild(plotElement);
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+      }
+    }
+  }, [chartType, engine, dataToProcess, groupBy, xKey, yKey]);
+
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <Scatter data={chartData} options={options} />
-    </div>
-  );
+      <ChartSnippetWrapper 
+        isDemo={isDemo}
+        chartType={chartType}
+        engine={engine}
+        data={finalData}
+        options={chartOptions}
+      >
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </ChartSnippetWrapper>
+    );
 };

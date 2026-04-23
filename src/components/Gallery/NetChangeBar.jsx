@@ -1,45 +1,127 @@
-import React from 'react';
-import Chart from 'react-apexcharts';
+import React, { useEffect, useRef } from 'react';
+import { ChartSnippetWrapper } from '../ChartSnippetWrapper';
 
-export const NetChangeBar = ({ data, config, lang }) => {
-  if (!data || !config || !config.valueKey) return null;
+const DEMO_DATA = [
+  { day: 'Mon', type: 'Dodane', amount: 44 },
+  { day: 'Mon', type: 'Usunięte', amount: -15 },
+  { day: 'Tue', type: 'Dodane', amount: 55 },
+  { day: 'Tue', type: 'Usunięte', amount: -25 },
+  { day: 'Wed', type: 'Dodane', amount: 41 },
+  { day: 'Wed', type: 'Usunięte', amount: -20 },
+  { day: 'Thu', type: 'Dodane', amount: 67 },
+  { day: 'Thu', type: 'Usunięte', amount: -10 },
+  { day: 'Fri', type: 'Dodane', amount: 22 },
+  { day: 'Fri', type: 'Usunięte', amount: -30 },
+  { day: 'Sat', type: 'Dodane', amount: 43 },
+  { day: 'Sat', type: 'Usunięte', amount: -5 },
+  { day: 'Sun', type: 'Dodane', amount: 21 },
+  { day: 'Sun', type: 'Usunięte', amount: -12 }
+];
 
-  const { valueKey } = config;
+const DEMO_OPTIONS = {
+  xKey: 'day',
+  groupBy: 'type',
+  valueKey: 'amount'
+};
 
-  const chartSeries = [
-    { 
-      name: lang === 'pl' ? 'Dodano' : 'Added', 
-      data: data.map(item => parseFloat(item[valueKey]) || 0) 
+export const NetChangeBar = ({ engine = 'apex', chartType = 'bar', rawData, options = {} }) => {
+  const containerRef = useRef(null);
+
+  const isDemo = !rawData || rawData.length === 0;
+  
+  const dataToProcess = isDemo ? DEMO_DATA : rawData;
+  const cleanOptions = Object.fromEntries(
+    Object.entries(options).filter(([_, value]) => value !== "" && value !== null && value !== undefined)
+  );
+
+  const baseOptions = isDemo ? DEMO_OPTIONS : {};
+
+  const activeOptions = { ...baseOptions, ...cleanOptions };
+
+  const xKey = activeOptions.xKey || 'x';
+  const groupBy = activeOptions.groupBy || 'group';
+  const valueKey = activeOptions.valueKey || 'value';
+
+  const groups = Array.from(new Set(dataToProcess.map(d => d[groupBy] ? String(d[groupBy]).trim() : 'Nieznana')));
+
+  const finalData = groups.map(group => {
+    const groupEntries = dataToProcess.filter(d => (d[groupBy] ? String(d[groupBy]).trim() : 'Nieznana') === group);
+    
+    return {
+      name: group, 
+      data: groupEntries.map(d => {
+        const parsedY = parseFloat(d[valueKey]);
+        return {
+          x: d[xKey] ? String(d[xKey]).trim() : 'Nieznane',
+          y: isNaN(parsedY) ? 0 : parsedY
+        };
+      })
+    };
+  });
+
+  const { xKey: _, groupBy: __, valueKey: ___, ...safeOptions } = activeOptions;
+
+  const chartOptions = {
+    chart: { 
+      type: chartType, 
+      stacked: true, 
+      background: 'transparent', 
+      toolbar: { show: false } 
     },
-    { 
-      name: lang === 'pl' ? 'Usunięto' : 'Removed', 
-      data: data.map(item => -(parseFloat(item[valueKey]) * 0.2) || 0) 
-    }
-  ];
-
-  const options = {
-    chart: { type: 'bar', stacked: true, background: 'transparent', toolbar: { show: false } },
-    colors: ['#646cff', '#ff6384'],
-    plotOptions: { bar: { borderRadius: 5 } },
+    colors: ['#646cff', '#ff6384'], 
+    plotOptions: { 
+      bar: { borderRadius: 5 } 
+    },
     theme: { mode: 'dark' },
-    xaxis: { 
-      categories: data.map((_, i) => i + 1),
-      labels: { style: { colors: '#888' } }
-    },
-    yaxis: { labels: { style: { colors: '#888' } } },
     legend: {
       show: true,
       position: 'top',
       horizontalAlign: 'center',
-      labels: { colors: '#64748b' }
+      labels: {
+        colors: '#64748b',
+        useSeriesColors: false
+      },
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 12,
+      },
+      itemMargin: {
+        horizontal: 20,
+        vertical: 5
+      }
     },
-    grid: { borderColor: '#333', strokeDasharray: 4 },
-    tooltip: { theme: 'dark' }
+    grid: {
+      borderColor: '#333',
+      strokeDasharray: 4
+    },
+    tooltip: { theme: 'dark' },
+    series: finalData,
+    ...safeOptions
   };
 
+  useEffect(() => {
+    if (window.makeplot && containerRef.current && finalData.length > 0) {
+      containerRef.current.innerHTML = '';
+      
+      const plotElement = window.makeplot(chartType, finalData, chartOptions, engine);
+      
+      if (plotElement) {
+        containerRef.current.appendChild(plotElement);
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+      }
+    }
+  }, [chartType, engine, dataToProcess, xKey, groupBy, valueKey]);
+
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <Chart options={options} series={chartSeries} type="bar" height="100%" />
-    </div>
-  );
+      <ChartSnippetWrapper 
+        isDemo={isDemo}
+        chartType={chartType}
+        engine={engine}
+        data={finalData}
+        options={chartOptions}
+      >
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </ChartSnippetWrapper>
+    );
 };
