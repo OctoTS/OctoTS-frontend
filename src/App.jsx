@@ -172,6 +172,8 @@ function App() {
     </svg>
   );
 
+  const isSupported = (id) => [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15].includes(id);
+
   return (
     <div className="app-root">
       <a href="https://github.com/OctoTS" target="_blank" rel="noopener noreferrer" className="github-org-link">
@@ -224,49 +226,49 @@ function App() {
 
       {
         <main className="dashboard-grid">
-          <ChartCard title={t('charts.c1.title')} library="Nivo" description={t('charts.c1.desc')} lang={lang}>
+          <ChartCard title={t('charts.c1.title')} library="Nivo" description={t('charts.c1.desc')} lang={lang} disabled={processedData !== null && !isSupported(1)}>
             <BeeswarmPlot lang={lang} rawData={processedData} options={{groupBy: mapping.group, valueKey: mapping.value}} />
           </ChartCard>
-          <ChartCard title={t('charts.c2.title')} library="Nivo" description={t('charts.c2.desc')} lang={lang}>
+          <ChartCard title={t('charts.c2.title')} library="Nivo" description={t('charts.c2.desc')} lang={lang} disabled={processedData !== null && !isSupported(2)}>
             <CalendarActivity lang={lang} rawData={processedData} options={{timeKey: mapping.time, valueKey: mapping.value}} />
           </ChartCard>
-          <ChartCard title={t('charts.c3.title')} library="ECharts" description={t('charts.c3.desc')} lang={lang}>
+          <ChartCard title={t('charts.c3.title')} library="ECharts" description={t('charts.c3.desc')} lang={lang} disabled={processedData !== null && !isSupported(3)}>
             <TimeZoomPlot lang={lang}  rawData={processedData} options={{ valueKey: mapping.value, timeKey: mapping.time }}/>
           </ChartCard>
-          <ChartCard title={t('charts.c4.title')} library="Nivo" description={t('charts.c4.desc')} lang={lang}>
+          <ChartCard title={t('charts.c4.title')} library="Nivo" description={t('charts.c4.desc')} lang={lang} disabled={processedData !== null && !isSupported(4)}>
             <StreamGraph lang={lang} rawData={processedData} options={{ valueKey: mapping.value, groupKey: mapping.group, timeKey: mapping.time }} />
           </ChartCard>
-          <ChartCard title={t('charts.c5.title')} library="Nivo" description={t('charts.c5.desc')} lang={lang}>
+          <ChartCard title={t('charts.c5.title')} library="Nivo" description={t('charts.c5.desc')} lang={lang} disabled={processedData !== null && !isSupported(5)}>
             <BumpChart lang={lang} rawData={processedData} options={{timeKey: mapping.time, valueKey: mapping.value, groupBy: mapping.group}} />
           </ChartCard>
-          <ChartCard title={t('charts.c6.title')} library="ECharts" description={t('charts.c6.desc')} lang={lang}>
+          <ChartCard title={t('charts.c6.title')} library="ECharts" description={t('charts.c6.desc')} lang={lang} disabled={processedData !== null && !isSupported(6)}>
             <ProcessTimeline lang={lang} />
           </ChartCard>
-          <ChartCard title={t('charts.c7.title')} library="ECharts" description={t('charts.c7.desc')} lang={lang}>
+          <ChartCard title={t('charts.c7.title')} library="ECharts" description={t('charts.c7.desc')} lang={lang} disabled={processedData !== null && !isSupported(7)}>
             <HourlyCycle lang={lang} />
           </ChartCard>
-          <ChartCard title={t('charts.c8.title')} library="ECharts" description={t('charts.c8.desc')} lang={lang}>
+          <ChartCard title={t('charts.c8.title')} library="ECharts" description={t('charts.c8.desc')} lang={lang} disabled={processedData !== null && !isSupported(8)}>
             <VolatilityCandle lang={lang}  rawData={processedData} options={{ valueKey: mapping.value, timeKey: mapping.time }} />
           </ChartCard>
-          <ChartCard title={t('charts.c9.title')} library="Chart.js" description={t('charts.c9.desc')} lang={lang}>
+          <ChartCard title={t('charts.c9.title')} library="Chart.js" description={t('charts.c9.desc')} lang={lang} disabled={processedData !== null && !isSupported(9)}>
             <StatusRadar lang={lang}  rawData={processedData} options={{ valueKey: mapping.value, groupKey: mapping.group }} />
           </ChartCard>
-          <ChartCard title={t('charts.c10.title')} library="ApexCharts" description={t('charts.c10.desc')} lang={lang}>
+          <ChartCard title={t('charts.c10.title')} library="ApexCharts" description={t('charts.c10.desc')} lang={lang} disabled={processedData !== null && !isSupported(10)}>
             <ModuleTree lang={lang}  rawData={processedData} options={{labelKey: mapping.group, valueKey: mapping.value}} />
           </ChartCard>
-          <ChartCard title={t('charts.c11.title')} library="Chart.js" description={t('charts.c11.desc')} lang={lang}>
+          <ChartCard title={t('charts.c11.title')} library="Chart.js" description={t('charts.c11.desc')} lang={lang} disabled={processedData !== null && !isSupported(11)}>
             <ResourcePolar lang={lang}  rawData={processedData} options={{ valueKey: mapping.value, groupKey: mapping.group }} />
           </ChartCard>
-          <ChartCard title={t('charts.c12.title')} library="Chart.js" description={t('charts.c12.desc')} lang={lang}>
+          <ChartCard title={t('charts.c12.title')} library="Chart.js" description={t('charts.c12.desc')} lang={lang} disabled={processedData !== null && !isSupported(12)}>
             <EfficiencyScatter lang={lang}  rawData={processedData} options={{xKey: mapping.time, yKey: mapping.value, groupBy: mapping.group}} />
           </ChartCard>
-          <ChartCard title={t('charts.c13.title')} library="ApexCharts" description={t('charts.c13.desc')} lang={lang}>
+          <ChartCard title={t('charts.c13.title')} library="ApexCharts" description={t('charts.c13.desc')} lang={lang} disabled={processedData !== null && !isSupported(13)}>
             <NetChangeBar lang={lang}  rawData={processedData} options={{xKey: mapping.time, valueKey: mapping.value, groupBy: mapping.group}} />
           </ChartCard>
-          <ChartCard title={t('charts.c14.title')} library="ApexCharts" description={t('charts.c14.desc')} lang={lang}>
+          <ChartCard title={t('charts.c14.title')} library="ApexCharts" description={t('charts.c14.desc')} lang={lang} disabled={processedData !== null && !isSupported(14)}>
             <RangeTrend lang={lang}  rawData={processedData} options={{ valueKey: mapping.value, timeKey: mapping.time }} />
           </ChartCard>
-          <ChartCard title={t('charts.c15.title')} library="Chart.js" description={t('charts.c15.desc')} lang={lang}>
+          <ChartCard title={t('charts.c15.title')} library="Chart.js" description={t('charts.c15.desc')} lang={lang} disabled={processedData !== null && !isSupported(15)}>
             <StepEvolution lang={lang}  rawData={processedData} options={{ valueKey: mapping.value, timeKey: mapping.time }} />
           </ChartCard>
         </main>
