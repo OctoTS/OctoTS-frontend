@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import ChartCard from './components/ChartCard';
 import { ChartSnippetWrapper } from './components/ChartSnippetWrapper';
+import OctoPlotRenderer from './components/OctoPlotRenderer';
 
 const translations = {
   pl: {
@@ -179,15 +180,39 @@ function App() {
         )}
       </header>
 
-      {processedData && mapping.value && (
-        <main className="dashboard-grid">
-          {chartDefinitions.map(chart => (
-            <ChartCard key={chart.id} title={t(`charts.${chart.id}.title`)} library={chart.engine} description={t(`charts.${chart.id}.desc`)} lang={lang} source={sourceType}>
-              <ChartSnippetWrapper isDemo={true} chartType={chart.type} engine={chart.engine} data={processedData} mapping={mapping} lang={lang} />
-            </ChartCard>
-          ))}
-        </main>
-      )}
+{processedData && mapping.value && (
+  <main className="dashboard-grid">
+    {chartDefinitions.map(chart => (
+      <ChartCard 
+        key={chart.id} 
+        title={t(`charts.${chart.id}.title`)} 
+        library={chart.engine} 
+        description={t(`charts.${chart.id}.desc`)} 
+        lang={lang} 
+        source={sourceType}
+      >
+        <ChartSnippetWrapper 
+          isDemo={sourceType === 'MOCK'} 
+          chartType={chart.type} 
+          engine={chart.engine} 
+          data={processedData} 
+          mapping={mapping} 
+          sourceUrl={url} 
+          lang={lang} 
+        >
+          
+          <OctoPlotRenderer 
+            engine={chart.engine}
+            type={chart.type}
+            data={processedData}
+            mapping={mapping}
+            options={{}} 
+          />
+        </ChartSnippetWrapper>
+      </ChartCard>
+    ))}
+  </main>
+)}
     </div>
   );
 }
