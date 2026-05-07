@@ -1145,16 +1145,38 @@ function App() {
       </header>
 
       {processedData && mapping.value && (
-        <main className="dashboard-grid">
+  <main className="dashboard-grid">
+    {charts.map(chart => (
+      <ChartCard 
+        key={chart.id} 
+        title={t(`charts.${chart.id}.title`)} 
+        library={chart.engine} 
+        description={t(`charts.${chart.id}.desc`)} 
+        lang={lang} 
+        source={sourceType}
+      >
+        <ChartSnippetWrapper 
+          isDemo={sourceType === 'MOCK'} 
+          chartType={chart.type} 
+          engine={chart.engine} 
+          data={processedData} 
+          mapping={chart.mapping} 
+          sourceUrl={url} 
+          lang={lang} 
+        >
           
-
-          {charts.map(chart => (
-            <ChartCard key={chart.id} title={t(`charts.${chart.id}.title`)} library={chart.engine} description={t(`charts.${chart.id}.desc`)} lang={lang} source={sourceType}>
-              <ChartSnippetWrapper isDemo={true} chartType={chart.type} engine={chart.engine} data={processedData} mapping={chart.mapping} lang={lang} options={chart.options} />
-            </ChartCard>
-          ))}
-        </main>
-      )}
+          <OctoPlotRenderer 
+            engine={chart.engine}
+            type={chart.type}
+            data={processedData}
+            mapping={chart.mapping}
+            options={chart.options} 
+          />
+        </ChartSnippetWrapper>
+      </ChartCard>
+    ))}
+  </main>
+)}
     </div>
   );
 }
