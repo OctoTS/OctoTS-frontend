@@ -5,7 +5,7 @@ const OctoPlotRenderer = ({ engine, type, data, mapping, options }) => {
 
   useEffect(() => {
     // Sprawdzamy czy biblioteka window.makeplot jest dostępna
-    console.log(mapping);
+    // console.log(data);
     
     if (containerRef.current && window.makeplot && data) {
       containerRef.current.innerHTML = '';
@@ -15,6 +15,8 @@ const OctoPlotRenderer = ({ engine, type, data, mapping, options }) => {
           containerRef.current.appendChild(plotElement);
         }
       } catch (e) {
+        // console.log(e);
+        
         containerRef.current.innerHTML = '<div style="color:red; padding:20px;">Błąd renderowania wykresu</div>';
       }
     }

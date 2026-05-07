@@ -835,6 +835,7 @@ const translations = {
 
 const initialChartDefinitions = [
   { id: 'c1', type: 'swarmplot', engine: 'nivo', mapping: {}, options: {
+    aggregate: false,
     size: 8, 
     layout: 'vertical',
     margin: { top: 60, right: 60, bottom: 80, left: 60 },
@@ -843,6 +844,9 @@ const initialChartDefinitions = [
     axisLeft: { tickSize: 10, tickPadding: 5, tickRotation: 0, legendPosition: 'middle', legendOffset: -40 }
   } },
   { id: 'c2', type: 'calendar', engine: 'nivo', mapping: {}, options: {
+    aggregate: false,
+    from: `2026-01-01`,
+    to: `2026-12-31`,
     emptyColor: "#f1f2f6",
     colors: ['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560'],
     cellSize: 30,
@@ -854,20 +858,20 @@ const initialChartDefinitions = [
     yearLegendPosition: "none",
     monthLegendOffset: 15,
     dayLegendOffset: 10,
-  } },
+  }, disabled: false },
   { id: 'c3', type: 'line', engine: 'echarts', mapping: {}, options: {
     tooltip: { trigger: 'axis' },
     grid: { bottom: 80 },
-    xAxis: { type: 'category' }, // Dane wstrzykiwane dynamicznie
+    xAxis: { type: 'category' },
     yAxis: { type: 'value' },
     dataZoom: [
       { type: 'slider', start: 0, end: 100 },
       { type: 'inside', start: 0, end: 100 }
     ],
-    // Series to tylko szablon wyglądu, bez "data"
     seriesTemplate: { type: 'line', smooth: true, areaStyle: { opacity: 0.1 } } 
   } },
   { id: 'c4', type: 'stream', engine: 'nivo', mapping: {}, options: {
+    aggregate: false,
     margin: { top: 50, right: 110, bottom: 50, left: 60 },
     axisBottom: { tickSize: 5, tickPadding: 5, tickRotation: 0, legendOffset: 36 },
     axisLeft: { tickSize: 5, tickPadding: 5, tickRotation: 0, legendOffset: -40 },
@@ -875,6 +879,7 @@ const initialChartDefinitions = [
     colors: { scheme: 'nivo' },
   } },
   { id: 'c5', type: 'bump', engine: 'nivo', mapping: {}, options: {
+    aggregate: false,
     margin: { top: 40, right: 100, bottom: 80, left: 80 },
     colors: { scheme: 'set2' },
     lineWidth: 3, activeLineWidth: 6, inactiveLineWidth: 3, inactiveOpacity: 0.15,
@@ -884,8 +889,9 @@ const initialChartDefinitions = [
     axisBottom: { tickSize: 5, tickPadding: 5, tickRotation: 45, legendPosition: 'middle', legendOffset: 40 },
     axisLeft: { tickSize: 5, tickPadding: 10, tickRotation: 0, legendPosition: 'middle', legendOffset: -60 },
   } },
-  { id: 'c6', type: 'network', engine: 'echarts', mapping: {}, options: {} },
+  { id: 'c6', type: 'network', engine: 'echarts', mapping: {}, options: {}, disabled: true },
   { id: 'c7', type: 'heatmap', engine: 'echarts', mapping: {}, options: {
+    aggregate: false,
     tooltip: { position: 'top' },
     grid: { height: '65%', top: '5%', bottom: '25%', containLabel: true },
     visualMap: {
@@ -897,13 +903,15 @@ const initialChartDefinitions = [
       label: { show: false }, 
       emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0, 0, 0, 0.5)' } } 
     }
-  } },
+  }, disabled: true },
   { id: 'c8', type: 'candlestick', engine: 'apexcharts', mapping: {}, options: {
+    aggregate: false,
     tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
     yAxis: { scale: true },
     seriesTemplate: { itemStyle: { color: '#ef5350', color0: '#26a69a', borderColor: '#ef5350', borderColor0: '#26a69a' } }
-  } },
+  }, disabled: true },
   { id: 'c9', type: 'radar', engine: 'chartjs', mapping: {}, options: {
+    aggregate: false,
     responsive: true, maintainAspectRatio: false,
     scales: {
       r: {
@@ -914,8 +922,9 @@ const initialChartDefinitions = [
       }
     },
     plugins: { legend: { display: false } }
-  } },
+  }, disabled: true },
   { id: 'c10', type: 'treemap', engine: 'apexcharts', mapping: {}, options: {
+    aggregate: false,
     chart: { background: 'transparent', toolbar: { show: false } },
     theme: { mode: 'dark' },
     colors: ['#646cff']
@@ -928,8 +937,9 @@ const initialChartDefinitions = [
       x: { grid: { color: '#e0e0e0' } },
       y: { grid: { color: '#e0e0e0' } }
     }
-  } },
+  }, disabled: false },
   { id: 'c13', type: 'bar', engine: 'apexcharts', mapping: {}, options: {
+    aggregate: false,
     chart: { stacked: true, background: 'transparent', toolbar: { show: false } },
     colors: ['#646cff', '#ff6384'], 
     plotOptions: { bar: { borderRadius: 5 } },
@@ -945,6 +955,7 @@ const initialChartDefinitions = [
   } },
   { id: 'c14', type: 'area', engine: 'apexcharts', mapping: {}, options: {} },
   { id: 'c15', type: 'line', engine: 'chartjs', mapping: {}, options: {
+    aggregate: false,
     responsive: true, maintainAspectRatio: false,
   } }
 ];
@@ -983,12 +994,10 @@ function App() {
   const setMappingToPlot = (globalMapping, currentDefinitions) => {
     console.log(globalMapping);
     
-  // Przechodzimy przez każdy wykres i dopasowujemy mapowanie w zależności od jego typu
   return currentDefinitions.map((chart) => {
     let specificMapping = {};
 
     switch (chart.type) {
-      // 1. Klasyczne wykresy kartezjańskie (osie X i Y)
       case 'line':
       case 'area':
       case 'bar':
@@ -996,14 +1005,14 @@ function App() {
       case 'stream':
       case 'bump':
         specificMapping = {
-          x: globalMapping.time,       // Oś X to zazwyczaj czas
-          y: globalMapping.value,      // Oś Y to wartość
-          series: globalMapping.label, // Serie / grupowanie po etykiecie
-          group: globalMapping.label   // Fallback dla niektórych silników (np. starsze Chart.js)
+          x: globalMapping.time,       
+          y: globalMapping.value,     
+          series: globalMapping.label, 
+          group: globalMapping.label   
         };
         break;
 
-      // 2. Heatmapa (potrzebuje dwóch wymiarów i wartości na skrzyżowaniu)
+
       case 'heatmap':
         specificMapping = {
           x: globalMapping.time,
@@ -1012,32 +1021,27 @@ function App() {
         };
         break;
 
-      // 3. Wykresy relacyjne / rozkładu (często ignorują oś czasu, skupiając się na grupach)
       case 'treemap':
       case 'polararea':
       case 'radar':
       case 'swarmplot':
         specificMapping = {
-          id: globalMapping.label,     // Nivo / ECharts 
-          x: globalMapping.label,      // ApexCharts (używa x/y nawet w treemap)
+          id: globalMapping.label,     
+          x: globalMapping.label,     
           y: globalMapping.value,
           value: globalMapping.value,
-          label: globalMapping.label   // Chart.js
+          label: globalMapping.label   
         };
         break;
 
-      // 4. Specyficzne - Kalendarz (Nivo)
       case 'calendar':
         specificMapping = {
-          day: globalMapping.time,
+          date: globalMapping.time,
           value: globalMapping.value
         };
         break;
 
-      // 5. Specyficzne - Sieć / Graf (ECharts)
       case 'network':
-        // Dla sieci globalny format [time, label, value] nie jest idealny, 
-        // ale możemy założyć, że 'time' to źródło, a 'label' to cel
         specificMapping = {
           source: globalMapping.time,
           target: globalMapping.label,
@@ -1045,17 +1049,13 @@ function App() {
         };
         break;
 
-      // 6. Świecowy (ApexCharts)
       case 'candlestick':
-        // Świece wymagają tablicy OHLC, więc zwykłe 'value' to uproszczenie,
-        // ale mapujemy podstawy, by wykres się wyrenderował.
         specificMapping = {
           x: globalMapping.time,
           y: globalMapping.value 
         };
         break;
 
-      // Fallback, gdyby wpadł jakiś nowy typ wykresu
       default:
         specificMapping = {
           x: globalMapping.time || globalMapping.label,
@@ -1063,7 +1063,6 @@ function App() {
         };
     }
 
-    // Zwracamy kopię obiektu wykresu z nadpisanym polem 'mapping'
     return {
       ...chart,
       mapping: specificMapping
@@ -1071,10 +1070,73 @@ function App() {
   });
 };
 
-// --- PRZYKŁAD UŻYCIA ---
-// const newMapping = { time: "timestamp", label: "miasto", value: "temperatura" };
-// const updatedCharts = setMappingToPlot(newMapping, chartDefinitions);
-// console.log(updatedCharts);
+
+const getEnrichedOptions = (chart) => {
+    const opts = JSON.parse(JSON.stringify(chart.options));
+    const m = chart.mapping; 
+
+    switch (chart.type) {
+      case 'swarmplot':
+        if (opts.axisBottom) opts.axisBottom.legend = m.group ? m.group.toUpperCase() : '';
+        if (opts.axisLeft) opts.axisLeft.legend = m.value ? m.value.toUpperCase() : '';
+        opts.groupBy = m.group;
+        opts.value = m.value;
+        break;
+
+      case 'stream':
+        if (opts.axisBottom) opts.axisBottom.legend = m.x || '';
+        if (opts.axisLeft) opts.axisLeft.legend = m.y || '';
+
+        if (m.series && processedData) {
+          const uniqueKeys = [...new Set(processedData.map(item => item[m.series]).filter(Boolean))];
+          opts.keys = uniqueKeys;
+
+          opts.series = m.series;  
+          opts.timeKey = m.x;       
+          opts.valueKey = m.y;      
+        }
+        
+        opts.colors = { scheme: 'set2' };
+        break;
+
+      case 'bump':
+        if (opts.axisBottom) opts.axisBottom.legend = m.x ? m.x.toUpperCase() : '';
+        if (opts.axisLeft) opts.axisLeft.legend = m.y ? m.y.toUpperCase() : '';
+        opts.groupBy = m.series;
+        opts.timeKey = m.x;
+        opts.valueKey = m.y;
+        break;
+
+      case 'heatmap':
+        if (opts.seriesTemplate) {
+          opts.seriesTemplate.name = lang === 'en' ? 'Activity' : 'Aktywność';
+        }
+        break;
+
+      case 'scatter':
+        if (opts.scales && opts.scales.x) {
+          opts.scales.x.title = opts.scales.x.title || { display: true };
+          opts.scales.x.title.text = m.x ? m.x.toUpperCase() : '';
+          opts.scales.x.title.color = '#888'; 
+        }
+        if (opts.scales && opts.scales.y) {
+          opts.scales.y.title = opts.scales.y.title || { display: true };
+          opts.scales.y.title.text = m.y ? m.y.toUpperCase() : '';
+          opts.scales.y.title.color = '#888';
+        }
+        break;
+
+      // c8 (candlestick) - tu nazwa serii na podstawie mapowania
+      case 'candlestick':
+        if (opts.seriesTemplate) {
+          opts.seriesTemplate.name = m.y || 'Series';
+        }
+        break;
+    }
+
+    return opts;
+  };
+
 
   const applyMapping = () => {
     const newMapping = { 
@@ -1083,14 +1145,10 @@ function App() {
       value: draftMapping.value 
     };
 
-    // 2. Aktualizujemy stan (będzie widoczny przy następnym renderze)
     setMapping(newMapping);
 
-    // 3. Używamy LOKALNEJ stałej (newMapping) i naszego stanu wykresów (charts)
-    // To naprawia problem przekazywania pustego obiektu!
     const updatedCharts = setMappingToPlot(newMapping, charts);
 
-    // 4. Aktualizujemy stan wykresów, by React wiedział, że musi odświeżyć interfejs
     setCharts(updatedCharts);
     
     setFeedback({ type: 'success', key: 'successProcess' });
@@ -1101,7 +1159,6 @@ function App() {
     setRawHeaders([]); 
     setMapping({}); 
     setUrl('');
-    // Warto też zresetować wykresy do pierwotnego stanu przy resecie:
     setCharts(initialChartDefinitions); 
     setFeedback({ type: 'info', key: 'initialMessage' });
   };
@@ -1146,7 +1203,10 @@ function App() {
 
       {processedData && mapping.value && (
   <main className="dashboard-grid">
-    {charts.map(chart => (
+    {charts.map(chart =>{
+      const finalOptions = getEnrichedOptions(chart);
+      
+      return (
       <ChartCard 
         key={chart.id} 
         title={t(`charts.${chart.id}.title`)} 
@@ -1154,6 +1214,7 @@ function App() {
         description={t(`charts.${chart.id}.desc`)} 
         lang={lang} 
         source={sourceType}
+        disabled={chart.disabled}
       >
         <ChartSnippetWrapper 
           isDemo={sourceType === 'MOCK'} 
@@ -1170,11 +1231,12 @@ function App() {
             type={chart.type}
             data={processedData}
             mapping={chart.mapping}
-            options={chart.options} 
+            options={finalOptions} 
           />
         </ChartSnippetWrapper>
       </ChartCard>
-    ))}
+    )
+    } )}
   </main>
 )}
     </div>
