@@ -5,6 +5,8 @@ const OctoPlotRenderer = ({ engine, type, data, mapping, options }) => {
 
   useEffect(() => {
     // Sprawdzamy czy biblioteka window.makeplot jest dostępna
+    console.log(mapping);
+    
     if (containerRef.current && window.makeplot && data) {
       containerRef.current.innerHTML = '';
       try {
