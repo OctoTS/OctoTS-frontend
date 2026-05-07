@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import ChartCard from './components/ChartCard';
 import { ChartSnippetWrapper } from './components/ChartSnippetWrapper';
+import OctoPlotRenderer from './components/OctoPlotRenderer';
 
 const DEMO_DATA = [
   {
