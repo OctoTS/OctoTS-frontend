@@ -23,7 +23,7 @@ export const ChartSnippetWrapper = ({
 
 const htmlSnippet = `<div id="chart-container" style="height: 500px; width: 100%;"></div>
 
-<script src="https://cdn.jsdelivr.net/gh/OctoTS/OctoTS-frontend-lib@feat/full-nivo-support/dist/OctoTS-plot-lib.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/OctoTS/OctoTS-frontend-lib@v2.1.1/dist/OctoTS-plot-lib.js"></script>
 
 <script>
   async function renderChart() {
