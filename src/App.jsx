@@ -5,758 +5,163 @@ import { ChartSnippetWrapper } from './components/ChartSnippetWrapper';
 import OctoPlotRenderer from './components/OctoPlotRenderer';
 
 const DEMO_DATA = [
-  {
-    "timestamp": "2026-04-01T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-01T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-01T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-01T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-01T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-02T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-02T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-02T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-02T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-02T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 11
-  },
-  {
-    "timestamp": "2026-04-03T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-03T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-03T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-03T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-03T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-04T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-04T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-04T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-04T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-04T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-05T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-05T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-05T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-05T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-05T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-06T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-06T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-06T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 21
-  },
-  {
-    "timestamp": "2026-04-06T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-06T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-07T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-07T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-07T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-07T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-07T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-08T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-08T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-08T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-08T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-08T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-09T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-09T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-09T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-09T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-09T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 11
-  },
-  {
-    "timestamp": "2026-04-10T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-10T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-10T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-10T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-10T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 10
-  },
-  {
-    "timestamp": "2026-04-11T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-11T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-11T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-11T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-11T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 11
-  },
-  {
-    "timestamp": "2026-04-12T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-12T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-12T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-12T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-12T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-13T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-13T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-13T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-13T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-13T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-14T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-14T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-14T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-14T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-14T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-15T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-15T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-15T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-15T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-15T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-16T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-16T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-16T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-16T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-16T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-17T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-17T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-17T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 21
-  },
-  {
-    "timestamp": "2026-04-17T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-17T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-18T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-18T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 21
-  },
-  {
-    "timestamp": "2026-04-18T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 22
-  },
-  {
-    "timestamp": "2026-04-18T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-18T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-19T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-19T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-19T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-19T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-19T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-20T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-20T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-20T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-20T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-20T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-21T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-21T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-21T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-21T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-21T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-22T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-22T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-22T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-22T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-22T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 11
-  },
-  {
-    "timestamp": "2026-04-23T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-23T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-23T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-23T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-23T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 12
-  },
-  {
-    "timestamp": "2026-04-24T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-24T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-24T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-24T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-24T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 13
-  },
-  {
-    "timestamp": "2026-04-25T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-25T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-25T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-25T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-25T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-26T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-26T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-26T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 21
-  },
-  {
-    "timestamp": "2026-04-26T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-26T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-27T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-27T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 21
-  },
-  {
-    "timestamp": "2026-04-27T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 22
-  },
-  {
-    "timestamp": "2026-04-27T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-27T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-28T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-28T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-28T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 20
-  },
-  {
-    "timestamp": "2026-04-28T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-28T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-29T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-29T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-29T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 19
-  },
-  {
-    "timestamp": "2026-04-29T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 16
-  },
-  {
-    "timestamp": "2026-04-29T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 14
-  },
-  {
-    "timestamp": "2026-04-30T12:00:00Z",
-    "miasto": "Warszawa",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-30T12:00:00Z",
-    "miasto": "Kraków",
-    "temperatura": 17
-  },
-  {
-    "timestamp": "2026-04-30T12:00:00Z",
-    "miasto": "Wrocław",
-    "temperatura": 18
-  },
-  {
-    "timestamp": "2026-04-30T12:00:00Z",
-    "miasto": "Poznań",
-    "temperatura": 15
-  },
-  {
-    "timestamp": "2026-04-30T12:00:00Z",
-    "miasto": "Gdańsk",
-    "temperatura": 13
-  }
-]
+  { "timestamp": "2026-04-01T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-01T12:00:00Z", "miasto": "Kraków", "temperatura": 16 },
+  { "timestamp": "2026-04-01T12:00:00Z", "miasto": "Wrocław", "temperatura": 17 },
+  { "timestamp": "2026-04-01T12:00:00Z", "miasto": "Poznań", "temperatura": 14 },
+  { "timestamp": "2026-04-01T12:00:00Z", "miasto": "Gdańsk", "temperatura": 12 },
+  { "timestamp": "2026-04-02T12:00:00Z", "miasto": "Warszawa", "temperatura": 16 },
+  { "timestamp": "2026-04-02T12:00:00Z", "miasto": "Kraków", "temperatura": 15 },
+  { "timestamp": "2026-04-02T12:00:00Z", "miasto": "Wrocław", "temperatura": 18 },
+  { "timestamp": "2026-04-02T12:00:00Z", "miasto": "Poznań", "temperatura": 15 },
+  { "timestamp": "2026-04-02T12:00:00Z", "miasto": "Gdańsk", "temperatura": 11 },
+  { "timestamp": "2026-04-03T12:00:00Z", "miasto": "Warszawa", "temperatura": 14 },
+  { "timestamp": "2026-04-03T12:00:00Z", "miasto": "Kraków", "temperatura": 17 },
+  { "timestamp": "2026-04-03T12:00:00Z", "miasto": "Wrocław", "temperatura": 16 },
+  { "timestamp": "2026-04-03T12:00:00Z", "miasto": "Poznań", "temperatura": 13 },
+  { "timestamp": "2026-04-03T12:00:00Z", "miasto": "Gdańsk", "temperatura": 13 },
+  { "timestamp": "2026-04-04T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-04T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-04T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-04T12:00:00Z", "miasto": "Poznań", "temperatura": 14 },
+  { "timestamp": "2026-04-04T12:00:00Z", "miasto": "Gdańsk", "temperatura": 14 },
+  { "timestamp": "2026-04-05T12:00:00Z", "miasto": "Warszawa", "temperatura": 17 },
+  { "timestamp": "2026-04-05T12:00:00Z", "miasto": "Kraków", "temperatura": 19 },
+  { "timestamp": "2026-04-05T12:00:00Z", "miasto": "Wrocław", "temperatura": 20 },
+  { "timestamp": "2026-04-05T12:00:00Z", "miasto": "Poznań", "temperatura": 16 },
+  { "timestamp": "2026-04-05T12:00:00Z", "miasto": "Gdańsk", "temperatura": 15 },
+  { "timestamp": "2026-04-06T12:00:00Z", "miasto": "Warszawa", "temperatura": 18 },
+  { "timestamp": "2026-04-06T12:00:00Z", "miasto": "Kraków", "temperatura": 20 },
+  { "timestamp": "2026-04-06T12:00:00Z", "miasto": "Wrocław", "temperatura": 21 },
+  { "timestamp": "2026-04-06T12:00:00Z", "miasto": "Poznań", "temperatura": 17 },
+  { "timestamp": "2026-04-06T12:00:00Z", "miasto": "Gdańsk", "temperatura": 16 },
+  { "timestamp": "2026-04-07T12:00:00Z", "miasto": "Warszawa", "temperatura": 16 },
+  { "timestamp": "2026-04-07T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-07T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-07T12:00:00Z", "miasto": "Poznań", "temperatura": 15 },
+  { "timestamp": "2026-04-07T12:00:00Z", "miasto": "Gdańsk", "temperatura": 14 },
+  { "timestamp": "2026-04-08T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-08T12:00:00Z", "miasto": "Kraków", "temperatura": 16 },
+  { "timestamp": "2026-04-08T12:00:00Z", "miasto": "Wrocław", "temperatura": 17 },
+  { "timestamp": "2026-04-08T12:00:00Z", "miasto": "Poznań", "temperatura": 14 },
+  { "timestamp": "2026-04-08T12:00:00Z", "miasto": "Gdańsk", "temperatura": 12 },
+  { "timestamp": "2026-04-09T12:00:00Z", "miasto": "Warszawa", "temperatura": 14 },
+  { "timestamp": "2026-04-09T12:00:00Z", "miasto": "Kraków", "temperatura": 15 },
+  { "timestamp": "2026-04-09T12:00:00Z", "miasto": "Wrocław", "temperatura": 16 },
+  { "timestamp": "2026-04-09T12:00:00Z", "miasto": "Poznań", "temperatura": 13 },
+  { "timestamp": "2026-04-09T12:00:00Z", "miasto": "Gdańsk", "temperatura": 11 },
+  { "timestamp": "2026-04-10T12:00:00Z", "miasto": "Warszawa", "temperatura": 12 },
+  { "timestamp": "2026-04-10T12:00:00Z", "miasto": "Kraków", "temperatura": 14 },
+  { "timestamp": "2026-04-10T12:00:00Z", "miasto": "Wrocław", "temperatura": 15 },
+  { "timestamp": "2026-04-10T12:00:00Z", "miasto": "Poznań", "temperatura": 12 },
+  { "timestamp": "2026-04-10T12:00:00Z", "miasto": "Gdańsk", "temperatura": 10 },
+  { "timestamp": "2026-04-11T12:00:00Z", "miasto": "Warszawa", "temperatura": 13 },
+  { "timestamp": "2026-04-11T12:00:00Z", "miasto": "Kraków", "temperatura": 15 },
+  { "timestamp": "2026-04-11T12:00:00Z", "miasto": "Wrocław", "temperatura": 16 },
+  { "timestamp": "2026-04-11T12:00:00Z", "miasto": "Poznań", "temperatura": 13 },
+  { "timestamp": "2026-04-11T12:00:00Z", "miasto": "Gdańsk", "temperatura": 11 },
+  { "timestamp": "2026-04-12T12:00:00Z", "miasto": "Warszawa", "temperatura": 14 },
+  { "timestamp": "2026-04-12T12:00:00Z", "miasto": "Kraków", "temperatura": 16 },
+  { "timestamp": "2026-04-12T12:00:00Z", "miasto": "Wrocław", "temperatura": 17 },
+  { "timestamp": "2026-04-12T12:00:00Z", "miasto": "Poznań", "temperatura": 14 },
+  { "timestamp": "2026-04-12T12:00:00Z", "miasto": "Gdańsk", "temperatura": 12 },
+  { "timestamp": "2026-04-13T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-13T12:00:00Z", "miasto": "Kraków", "temperatura": 17 },
+  { "timestamp": "2026-04-13T12:00:00Z", "miasto": "Wrocław", "temperatura": 18 },
+  { "timestamp": "2026-04-13T12:00:00Z", "miasto": "Poznań", "temperatura": 15 },
+  { "timestamp": "2026-04-13T12:00:00Z", "miasto": "Gdańsk", "temperatura": 13 },
+  { "timestamp": "2026-04-14T12:00:00Z", "miasto": "Warszawa", "temperatura": 16 },
+  { "timestamp": "2026-04-14T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-14T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-14T12:00:00Z", "miasto": "Poznań", "temperatura": 16 },
+  { "timestamp": "2026-04-14T12:00:00Z", "miasto": "Gdańsk", "temperatura": 14 },
+  { "timestamp": "2026-04-15T12:00:00Z", "miasto": "Warszawa", "temperatura": 17 },
+  { "timestamp": "2026-04-15T12:00:00Z", "miasto": "Kraków", "temperatura": 19 },
+  { "timestamp": "2026-04-15T12:00:00Z", "miasto": "Wrocław", "temperatura": 20 },
+  { "timestamp": "2026-04-15T12:00:00Z", "miasto": "Poznań", "temperatura": 17 },
+  { "timestamp": "2026-04-15T12:00:00Z", "miasto": "Gdańsk", "temperatura": 15 },
+  { "timestamp": "2026-04-16T12:00:00Z", "miasto": "Warszawa", "temperatura": 18 },
+  { "timestamp": "2026-04-16T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-16T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-16T12:00:00Z", "miasto": "Poznań", "temperatura": 16 },
+  { "timestamp": "2026-04-16T12:00:00Z", "miasto": "Gdańsk", "temperatura": 14 },
+  { "timestamp": "2026-04-17T12:00:00Z", "miasto": "Warszawa", "temperatura": 19 },
+  { "timestamp": "2026-04-17T12:00:00Z", "miasto": "Kraków", "temperatura": 20 },
+  { "timestamp": "2026-04-17T12:00:00Z", "miasto": "Wrocław", "temperatura": 21 },
+  { "timestamp": "2026-04-17T12:00:00Z", "miasto": "Poznań", "temperatura": 18 },
+  { "timestamp": "2026-04-17T12:00:00Z", "miasto": "Gdańsk", "temperatura": 15 },
+  { "timestamp": "2026-04-18T12:00:00Z", "miasto": "Warszawa", "temperatura": 20 },
+  { "timestamp": "2026-04-18T12:00:00Z", "miasto": "Kraków", "temperatura": 21 },
+  { "timestamp": "2026-04-18T12:00:00Z", "miasto": "Wrocław", "temperatura": 22 },
+  { "timestamp": "2026-04-18T12:00:00Z", "miasto": "Poznań", "temperatura": 19 },
+  { "timestamp": "2026-04-18T12:00:00Z", "miasto": "Gdańsk", "temperatura": 16 },
+  { "timestamp": "2026-04-19T12:00:00Z", "miasto": "Warszawa", "temperatura": 18 },
+  { "timestamp": "2026-04-19T12:00:00Z", "miasto": "Kraków", "temperatura": 19 },
+  { "timestamp": "2026-04-19T12:00:00Z", "miasto": "Wrocław", "temperatura": 20 },
+  { "timestamp": "2026-04-19T12:00:00Z", "miasto": "Poznań", "temperatura": 17 },
+  { "timestamp": "2026-04-19T12:00:00Z", "miasto": "Gdańsk", "temperatura": 15 },
+  { "timestamp": "2026-04-20T12:00:00Z", "miasto": "Warszawa", "temperatura": 16 },
+  { "timestamp": "2026-04-20T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-20T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-20T12:00:00Z", "miasto": "Poznań", "temperatura": 16 },
+  { "timestamp": "2026-04-20T12:00:00Z", "miasto": "Gdańsk", "temperatura": 13 },
+  { "timestamp": "2026-04-21T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-21T12:00:00Z", "miasto": "Kraków", "temperatura": 17 },
+  { "timestamp": "2026-04-21T12:00:00Z", "miasto": "Wrocław", "temperatura": 18 },
+  { "timestamp": "2026-04-21T12:00:00Z", "miasto": "Poznań", "temperatura": 15 },
+  { "timestamp": "2026-04-21T12:00:00Z", "miasto": "Gdańsk", "temperatura": 12 },
+  { "timestamp": "2026-04-22T12:00:00Z", "miasto": "Warszawa", "temperatura": 14 },
+  { "timestamp": "2026-04-22T12:00:00Z", "miasto": "Kraków", "temperatura": 16 },
+  { "timestamp": "2026-04-22T12:00:00Z", "miasto": "Wrocław", "temperatura": 17 },
+  { "timestamp": "2026-04-22T12:00:00Z", "miasto": "Poznań", "temperatura": 14 },
+  { "timestamp": "2026-04-22T12:00:00Z", "miasto": "Gdańsk", "temperatura": 11 },
+  { "timestamp": "2026-04-23T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-23T12:00:00Z", "miasto": "Kraków", "temperatura": 17 },
+  { "timestamp": "2026-04-23T12:00:00Z", "miasto": "Wrocław", "temperatura": 18 },
+  { "timestamp": "2026-04-23T12:00:00Z", "miasto": "Poznań", "temperatura": 15 },
+  { "timestamp": "2026-04-23T12:00:00Z", "miasto": "Gdańsk", "temperatura": 12 },
+  { "timestamp": "2026-04-24T12:00:00Z", "miasto": "Warszawa", "temperatura": 16 },
+  { "timestamp": "2026-04-24T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-24T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-24T12:00:00Z", "miasto": "Poznań", "temperatura": 16 },
+  { "timestamp": "2026-04-24T12:00:00Z", "miasto": "Gdańsk", "temperatura": 13 },
+  { "timestamp": "2026-04-25T12:00:00Z", "miasto": "Warszawa", "temperatura": 17 },
+  { "timestamp": "2026-04-25T12:00:00Z", "miasto": "Kraków", "temperatura": 19 },
+  { "timestamp": "2026-04-25T12:00:00Z", "miasto": "Wrocław", "temperatura": 20 },
+  { "timestamp": "2026-04-25T12:00:00Z", "miasto": "Poznań", "temperatura": 17 },
+  { "timestamp": "2026-04-25T12:00:00Z", "miasto": "Gdańsk", "temperatura": 14 },
+  { "timestamp": "2026-04-26T12:00:00Z", "miasto": "Warszawa", "temperatura": 18 },
+  { "timestamp": "2026-04-26T12:00:00Z", "miasto": "Kraków", "temperatura": 20 },
+  { "timestamp": "2026-04-26T12:00:00Z", "miasto": "Wrocław", "temperatura": 21 },
+  { "timestamp": "2026-04-26T12:00:00Z", "miasto": "Poznań", "temperatura": 18 },
+  { "timestamp": "2026-04-26T12:00:00Z", "miasto": "Gdańsk", "temperatura": 15 },
+  { "timestamp": "2026-04-27T12:00:00Z", "miasto": "Warszawa", "temperatura": 19 },
+  { "timestamp": "2026-04-27T12:00:00Z", "miasto": "Kraków", "temperatura": 21 },
+  { "timestamp": "2026-04-27T12:00:00Z", "miasto": "Wrocław", "temperatura": 22 },
+  { "timestamp": "2026-04-27T12:00:00Z", "miasto": "Poznań", "temperatura": 19 },
+  { "timestamp": "2026-04-27T12:00:00Z", "miasto": "Gdańsk", "temperatura": 16 },
+  { "timestamp": "2026-04-28T12:00:00Z", "miasto": "Warszawa", "temperatura": 17 },
+  { "timestamp": "2026-04-28T12:00:00Z", "miasto": "Kraków", "temperatura": 19 },
+  { "timestamp": "2026-04-28T12:00:00Z", "miasto": "Wrocław", "temperatura": 20 },
+  { "timestamp": "2026-04-28T12:00:00Z", "miasto": "Poznań", "temperatura": 17 },
+  { "timestamp": "2026-04-28T12:00:00Z", "miasto": "Gdańsk", "temperatura": 15 },
+  { "timestamp": "2026-04-29T12:00:00Z", "miasto": "Warszawa", "temperatura": 16 },
+  { "timestamp": "2026-04-29T12:00:00Z", "miasto": "Kraków", "temperatura": 18 },
+  { "timestamp": "2026-04-29T12:00:00Z", "miasto": "Wrocław", "temperatura": 19 },
+  { "timestamp": "2026-04-29T12:00:00Z", "miasto": "Poznań", "temperatura": 16 },
+  { "timestamp": "2026-04-29T12:00:00Z", "miasto": "Gdańsk", "temperatura": 14 },
+  { "timestamp": "2026-04-30T12:00:00Z", "miasto": "Warszawa", "temperatura": 15 },
+  { "timestamp": "2026-04-30T12:00:00Z", "miasto": "Kraków", "temperatura": 17 },
+  { "timestamp": "2026-04-30T12:00:00Z", "miasto": "Wrocław", "temperatura": 18 },
+  { "timestamp": "2026-04-30T12:00:00Z", "miasto": "Poznań", "temperatura": 15 },
+  { "timestamp": "2026-04-30T12:00:00Z", "miasto": "Gdańsk", "temperatura": 13 }
+];
 
+const DEMO_MAPPING = { 
+  time: "timestamp", 
+  label: "miasto",
+  value: "temperatura"
+};
 
 const translations = {
   pl: {
@@ -959,41 +364,8 @@ const initialChartDefinitions = [
     responsive: true, maintainAspectRatio: false,
   } }
 ];
-function App() {
-  const [lang, setLang] = useState('pl');
-  const [processedData, setProcessedData] = useState(null);
-  const [rawHeaders, setRawHeaders] = useState([]);
-  const [sourceType, setSourceType] = useState('TESTOWE');
-  const [mapping, setMapping] = useState({});
-  const [draftMapping, setDraftMapping] = useState({ time: '', group: '', value: '' });
-  const [feedback, setFeedback] = useState({ type: 'info', key: 'initialMessage' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [url, setUrl] = useState('');
-  const [charts, setCharts] = useState(initialChartDefinitions);
 
-  const t = (key) => {
-    const keys = key.split('.');
-    return keys.reduce((acc, curr) => acc && acc[curr], translations[lang]) || key;
-  };
-
-  const loadSource = async (source) => {
-    if (!window.loadData) return;
-    setIsLoading(true); setFeedback(null);
-    try {
-      const { data, columns } = await window.loadData(source);
-      if (!data || data.length === 0) throw new Error();
-      setRawHeaders(columns);
-      setProcessedData(data);
-      setSourceType('PLIK');
-      setFeedback({ type: 'success', key: 'successLoad' });
-    } catch (e) {
-      setFeedback({ type: 'error', key: 'errorFile' });
-    } finally { setIsLoading(false); }
-  };
-
-  const setMappingToPlot = (globalMapping, currentDefinitions) => {
-    console.log(globalMapping);
-    
+const setMappingToPlot = (globalMapping, currentDefinitions) => {
   return currentDefinitions.map((chart) => {
     let specificMapping = {};
 
@@ -1011,7 +383,6 @@ function App() {
           group: globalMapping.label   
         };
         break;
-
 
       case 'heatmap':
         specificMapping = {
@@ -1070,8 +441,43 @@ function App() {
   });
 };
 
+const initialDemoCharts = setMappingToPlot(DEMO_MAPPING, initialChartDefinitions);
 
-const getEnrichedOptions = (chart) => {
+function App() {
+  const [lang, setLang] = useState('pl');
+  const [processedData, setProcessedData] = useState(null);
+  const [rawHeaders, setRawHeaders] = useState([]);
+  const [sourceType, setSourceType] = useState('TESTOWE');
+  const [mapping, setMapping] = useState({});
+  const [draftMapping, setDraftMapping] = useState({ time: '', group: '', value: '' });
+  const [feedback, setFeedback] = useState({ type: 'info', key: 'initialMessage' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [url, setUrl] = useState('');
+  
+  const [charts, setCharts] = useState(initialDemoCharts);
+
+  const t = React.useCallback((key) => {
+    const keys = key.split('.');
+    return keys.reduce((acc, curr) => acc && acc[curr], translations[lang]) || key;
+  }, [lang]);
+
+  const loadSource = async (source) => {
+    if (!window.loadData) return;
+    setIsLoading(true); setFeedback(null);
+    try {
+      const { data, columns } = await window.loadData(source);
+      if (!data || data.length === 0) throw new Error();
+      setRawHeaders(columns);
+      setProcessedData(data);
+      setSourceType('PLIK');
+      setFeedback({ type: 'success', key: 'successLoad' });
+    } catch (e) {
+      setFeedback({ type: 'error', key: 'errorFile' });
+    } finally { setIsLoading(false); }
+  };
+
+  const getEnrichedOptions = React.useCallback((chart, dataToUse) => {
+    // Klonowanie wykonujemy tylko wtedy, gdy funkcja zostanie wywołana
     const opts = JSON.parse(JSON.stringify(chart.options));
     const m = chart.mapping; 
 
@@ -1087,15 +493,13 @@ const getEnrichedOptions = (chart) => {
         if (opts.axisBottom) opts.axisBottom.legend = m.x || '';
         if (opts.axisLeft) opts.axisLeft.legend = m.y || '';
 
-        if (m.series && processedData) {
-          const uniqueKeys = [...new Set(processedData.map(item => item[m.series]).filter(Boolean))];
+        if (m.series && dataToUse) {
+          const uniqueKeys = [...new Set(dataToUse.map(item => item[m.series]).filter(Boolean))];
           opts.keys = uniqueKeys;
-
           opts.series = m.series;  
           opts.timeKey = m.x;       
           opts.valueKey = m.y;      
         }
-        
         opts.colors = { scheme: 'set2' };
         break;
 
@@ -1126,7 +530,6 @@ const getEnrichedOptions = (chart) => {
         }
         break;
 
-      // c8 (candlestick) - tu nazwa serii na podstawie mapowania
       case 'candlestick':
         if (opts.seriesTemplate) {
           opts.seriesTemplate.name = m.y || 'Series';
@@ -1135,8 +538,7 @@ const getEnrichedOptions = (chart) => {
     }
 
     return opts;
-  };
-
+  }, [lang]);
 
   const applyMapping = () => {
     const newMapping = { 
@@ -1146,11 +548,8 @@ const getEnrichedOptions = (chart) => {
     };
 
     setMapping(newMapping);
-
     const updatedCharts = setMappingToPlot(newMapping, charts);
-
     setCharts(updatedCharts);
-    
     setFeedback({ type: 'success', key: 'successProcess' });
   };
 
@@ -1159,9 +558,24 @@ const getEnrichedOptions = (chart) => {
     setRawHeaders([]); 
     setMapping({}); 
     setUrl('');
-    setCharts(initialChartDefinitions); 
+    setCharts(initialDemoCharts); 
     setFeedback({ type: 'info', key: 'initialMessage' });
   };
+
+  // --- KLUCZOWA OPTYMALIZACJA ---
+  // Określamy dane wejściowe
+  const isDemo = !processedData || !mapping.value;
+  const currentData = React.useMemo(() => isDemo ? DEMO_DATA : processedData, [isDemo, processedData]);
+
+  // Mapujemy i przygotowujemy drogie w obliczeniach opcje TYLKO GDY zmienią się faktyczne parametry, 
+  // całkowicie izolując to od zmian w polu wpisywania "url"
+  const renderedCharts = React.useMemo(() => {
+    return charts.map(chart => {
+      const finalOptions = getEnrichedOptions(chart, currentData);
+      return { chart, finalOptions };
+    });
+  }, [charts, currentData, getEnrichedOptions]);
+  // -----------------------------
 
   return (
     <div className="app-root">
@@ -1188,6 +602,7 @@ const getEnrichedOptions = (chart) => {
           {(processedData || rawHeaders.length > 0) && <button onClick={resetData} className="reset-button">{t('btnReset')}</button>}
         </div>
         {feedback && <div className={`feedback-message feedback-${feedback.type}`}>{t(feedback.key)}</div>}
+        
         {rawHeaders.length > 0 && !mapping.value && (
           <div className="mapping-container">
             <h3>{t('mappingTitle')}</h3>
@@ -1201,44 +616,37 @@ const getEnrichedOptions = (chart) => {
         )}
       </header>
 
-      {processedData && mapping.value && (
-  <main className="dashboard-grid">
-    {charts.map(chart =>{
-      const finalOptions = getEnrichedOptions(chart);
-      
-      return (
-      <ChartCard 
-        key={chart.id} 
-        title={t(`charts.${chart.id}.title`)} 
-        library={chart.engine} 
-        description={t(`charts.${chart.id}.desc`)} 
-        lang={lang} 
-        source={sourceType}
-        disabled={chart.disabled}
-      >
-        <ChartSnippetWrapper 
-          isDemo={sourceType === 'MOCK'} 
-          chartType={chart.type} 
-          engine={chart.engine} 
-          data={processedData} 
-          mapping={chart.mapping} 
-          sourceUrl={url} 
-          lang={lang} 
-        >
-          
-          <OctoPlotRenderer 
-            engine={chart.engine}
-            type={chart.type}
-            data={processedData}
-            mapping={chart.mapping}
-            options={finalOptions} 
-          />
-        </ChartSnippetWrapper>
-      </ChartCard>
-    )
-    } )}
-  </main>
-)}
+      <main className="dashboard-grid">
+        {renderedCharts.map(({ chart, finalOptions }) => (
+          <ChartCard 
+            key={chart.id} 
+            title={t(`charts.${chart.id}.title`)} 
+            library={chart.engine} 
+            description={t(`charts.${chart.id}.desc`)} 
+            lang={lang} 
+            source={sourceType}
+            disabled={chart.disabled}
+          >
+            <ChartSnippetWrapper 
+              isDemo={isDemo || sourceType === 'MOCK'} 
+              chartType={chart.type} 
+              engine={chart.engine} 
+              data={currentData} 
+              mapping={chart.mapping}
+              sourceUrl={url} 
+              lang={lang} 
+            >
+              <OctoPlotRenderer 
+                engine={chart.engine}
+                type={chart.type}
+                data={currentData}
+                mapping={chart.mapping}
+                options={finalOptions} 
+              />
+            </ChartSnippetWrapper>
+          </ChartCard>
+        ))}
+      </main>
     </div>
   );
 }
