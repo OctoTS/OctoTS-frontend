@@ -448,6 +448,7 @@ function App() {
   const [processedData, setProcessedData] = useState(null);
   const [rawHeaders, setRawHeaders] = useState([]);
   const [sourceType, setSourceType] = useState('TESTOWE');
+  const [draftSourceType, setDraftSourceType] = useState('TESTOWE');
   const [mapping, setMapping] = useState({});
   const [draftMapping, setDraftMapping] = useState({ time: '', group: '', value: '' });
   const [feedback, setFeedback] = useState({ type: 'info', key: 'initialMessage' });
@@ -461,19 +462,33 @@ function App() {
     return keys.reduce((acc, curr) => acc && acc[curr], translations[lang]) || key;
   }, [lang]);
 
-  const loadSource = async (source) => {
-    if (!window.loadData) return;
+const loadSource = async (source) => {
+    if (!window.loadData || !source) return;
+    if (typeof source === 'string' && source.trim().length === 0) return;
+
     setIsLoading(true); setFeedback(null);
     try {
       const { data, columns } = await window.loadData(source);
-      if (!data || data.length === 0) throw new Error();
+      
+      if (!data || !Array.isArray(data) || data.length === 0 || !columns || columns.length === 0) {
+        throw new Error("Invalid data format");
+      }
+
+      const firstColumnStr = String(columns[0]).trim().toLowerCase();
+      if (firstColumnStr.startsWith('<!doctype') || firstColumnStr.startsWith('<html')) {
+        throw new Error("Data source returned an HTML document, not a valid dataset.");
+      }
+
       setRawHeaders(columns);
       setProcessedData(data);
-      setSourceType('PLIK');
+      setDraftSourceType(typeof source === 'string' ? 'URL' : 'PLIK'); 
       setFeedback({ type: 'success', key: 'successLoad' });
     } catch (e) {
-      setFeedback({ type: 'error', key: 'errorFile' });
-    } finally { setIsLoading(false); }
+      console.error("Data Load Error:", e.message); 
+      setFeedback({ type: 'error', key: 'errorFile' }); 
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
   const getEnrichedOptions = React.useCallback((chart, dataToUse) => {
@@ -550,6 +565,7 @@ function App() {
     setMapping(newMapping);
     const updatedCharts = setMappingToPlot(newMapping, charts);
     setCharts(updatedCharts);
+    setSourceType(draftSourceType);
     setFeedback({ type: 'success', key: 'successProcess' });
   };
 
@@ -595,7 +611,13 @@ function App() {
         <div className="control-panel">
           <div className="input-group">
             <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="url-input" placeholder={t('urlPlaceholder')} />
-            <button onClick={() => loadSource(url)} className="action-button">{isLoading ? t('btnLoading') : t('btnLoad')}</button>
+                        <button 
+              onClick={() => loadSource(url)} 
+              className="action-button" 
+              disabled={isLoading || url.trim() === ''}
+            >
+              {isLoading ? t('btnLoading') : t('btnLoad')}
+            </button>
           </div>
           <div className="divider">{t('orSeparator')}</div>
           <label className="file-label">{t('btnFile')}<input type="file" onChange={(e) => loadSource(e.target.files[0])} style={{ display: 'none' }} /></label>
