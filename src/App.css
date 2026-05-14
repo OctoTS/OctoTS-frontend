@@ -68,23 +68,24 @@
   font-size: 1.2rem;
   margin-bottom: 30px;
 }
-
 .control-panel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   background: white;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
   border: 1px solid #e2e8f0;
-  margin-bottom: 20px;
+  gap: 20px;
 }
 
 .input-group {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -122,6 +123,11 @@
   background-color: #f1f5f9;
   color: #475569;
   border: 1px solid #cbd5e1;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap; 
 }
 
 .file-label:hover {
@@ -232,13 +238,51 @@
 }
 
 @media (max-width: 850px) {
+  .app-root {
+    padding-top: 100px;
+  }
+
+  .github-org-link {
+    top: 15px;
+    left: 15px;
+    font-size: 12px;
+  }
+
+  .language-bar {
+    top: 15px;
+    right: 15px;
+  }
+
   .control-panel {
     flex-direction: column;
-    gap: 15px;
+    align-items: stretch; 
+    padding: 20px;
   }
-  .github-org-link, .language-bar {
-    position: static;
-    justify-content: center;
-    margin-bottom: 10px;
+
+  .input-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .url-input {
+    width: 100% !important;
+    margin: 0;
+  }
+
+  .action-button, .file-label, .reset-button {
+    width: 100%;
+    display: block;
+    text-align: center;
+    box-sizing: border-box; 
+  }
+}
+
+  .main-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-grid {
+    gap: 15px;
+    padding: 0 5px;
   }
 }
