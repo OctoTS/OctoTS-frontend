@@ -463,6 +463,7 @@ function App() {
   }, [lang]);
 
 const loadSource = async (source) => {
+    resetData()
     if (!window.loadData || !source) return;
     if (typeof source === 'string' && source.trim().length === 0) return;
 
@@ -573,6 +574,7 @@ const loadSource = async (source) => {
     setProcessedData(null); 
     setRawHeaders([]); 
     setMapping({}); 
+    setDraftMapping({});
     setUrl('');
     setCharts(initialDemoCharts); 
     setFeedback({ type: 'info', key: 'initialMessage' });
