@@ -284,4 +284,11 @@
     gap: 15px;
     padding: 0 5px;
   }
+
+  @media (max-width: 1024px) {
+    .main-header h1 img {
+      height: 36px;
+      width: 36px;
+    }
+  }
 }
