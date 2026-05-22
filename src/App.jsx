@@ -603,12 +603,19 @@ const loadSource = async (source) => {
       </a>
 
       <div className="language-bar">
-        <button onClick={() => setLang('pl')} className={`lang-btn ${lang === 'pl' ? 'active' : ''}`}>PL</button>
-        <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'active' : ''}`}>EN</button>
+        <button onClick={() => setLang('pl')} className={`lang-btn ${lang === 'pl' ? 'active' : ''}`}>🇵🇱 PL</button>
+        <button onClick={() => setLang('en')} className={`lang-btn ${lang === 'en' ? 'active' : ''}`}>🇬🇧 EN</button>
       </div>
 
       <header className="main-header">
-        <h1>{t('title')}</h1>
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+          <img
+            src="/OctoTS-demo/OctoTS1.png"
+            alt="OctoTS logo"
+            style={{ height: '48px', width: '48px', mixBlendMode: 'multiply' }}
+          />
+          {t('title')}
+        </h1>
         <p>{t('subtitle')}</p>
         <div className="control-panel">
           <div className="input-group">
